@@ -80,9 +80,12 @@ function App() {
 
       <div className="flex-1 w-full relative">
         <SpectrumWaterfall
-          fftBins={fftData}
-          centerFrequency={centerFreq}
-          bandwidth={bandwidth}
+          data={{
+            fftBins: fftData,
+            frequency: centerFreq,
+            bandwidth: bandwidth,
+            time: Date.now(),
+          }}
           refLevel={-20}
           displayRange={100}
           averaging={avg}

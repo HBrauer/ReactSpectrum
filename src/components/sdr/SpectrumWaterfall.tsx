@@ -5,22 +5,25 @@ import { SPECTRUM_VS, SPECTRUM_FS, SPECTRUM_FILL_VS, SPECTRUM_FILL_FS, WATERFALL
 import { generateColorMap } from './colormaps';
 import { useDbTicks, useFrequencyTicks } from './axis-utils';
 
+export interface SpectrumData {
+    frequency: number;
+    bandwidth: number;
+    time?: number;
+    fftBins: Float32Array;
+}
+
 export interface SpectrumWaterfallProps {
-    fftBins: Float32Array; // Magnitude values in dB
-    centerFrequency: number; // Hz
-    bandwidth: number; // Hz
-    refLevel?: number; // dB, default 0
-    displayRange?: number; // dB, default 80
-    averaging?: number; // 0-1, default 0.5
+    data: SpectrumData;
+    refLevel?: number;
+    displayRange?: number;
+    averaging?: number;
     showPeakHold?: boolean;
-    colorMap?: string; // Preset name
+    colorMap?: string;
     className?: string;
 }
 
 export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
-    fftBins,
-    centerFrequency,
-    bandwidth,
+    data,
     refLevel = 0,
     displayRange = 80,
     averaging = 0.5,
@@ -28,6 +31,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     colorMap = 'turbo',
     className,
 }) => {
+    const { fftBins, frequency: centerFrequency, bandwidth, time } = data;
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rafRef = useRef<number | null>(null);
@@ -77,7 +81,8 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         programWaterfall: null as WebGLProgram | null,
 
         gl: null as WebGL2RenderingContext | null,
-        props: { refLevel, displayRange, colorMap, averaging, showPeakHold }
+        props: { refLevel, displayRange, colorMap, averaging, showPeakHold },
+        currentTime: 0,
     });
 
     useEffect(() => {
@@ -99,7 +104,8 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             }
             stateRef.current.fftBins = fftBins as any;
         }
-    }, [fftBins]);
+        stateRef.current.currentTime = time || Date.now();
+    }, [fftBins, time]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -212,10 +218,15 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, state.waterfallRow, currentFftSize, 1, gl.RED, gl.FLOAT, displayBins);
 
             // Update Markers Logic
-            const now = Date.now();
+            const now = state.currentTime || Date.now();
             if (now - lastMarkerTime.current > 5000) {
-                const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                const newMarker = { id: now, label: timeStr, rowIndex: state.waterfallRow };
+                const date = new Date(now);
+                const timeStr = date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                // Optional: add milliseconds if needed for high precision, but HH:MM:SS is usually fine
+                // const ms = date.getMilliseconds().toString().padStart(3, '0');
+                // const label = `${timeStr}.${ms}`;
+                const label = timeStr;
+                const newMarker = { id: now, label: label, rowIndex: state.waterfallRow };
 
                 // Update both Ref (for immediate thread access) and State (for DOM render)
                 const newMarkers = [...markersRef.current, newMarker].filter(() => {

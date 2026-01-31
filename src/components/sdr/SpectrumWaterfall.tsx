@@ -47,6 +47,18 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rafRef = useRef<number | null>(null);
+    const railCanvasRef = useRef<HTMLCanvasElement>(null);
+    const colormapDataRef = useRef<Uint8Array>(generateColorMap(colorMap as any));
+    const colormapVersionRef = useRef(0);
+    const railStateRef = useRef({
+        w: 0,
+        h: 0,
+        refLevel: 0,
+        displayRange: 0,
+        minDb: 0,
+        maxDb: 0,
+        cmapVersion: 0
+    });
 
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -121,10 +133,12 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     // Update props in ref
     useEffect(() => {
         stateRef.current.props = { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs };
+        const data = generateColorMap(colorMap as any);
+        colormapDataRef.current = data;
+        colormapVersionRef.current += 1;
         const gl = stateRef.current.gl;
         if (gl && stateRef.current.colormapTexture) {
             gl.bindTexture(gl.TEXTURE_2D, stateRef.current.colormapTexture);
-            const data = generateColorMap(colorMap as any);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
         }
     }, [refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs]);
@@ -258,6 +272,66 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         let currentFftSize = 0;
 
         // Render Loop
+        const drawColorRail = () => {
+            const railCanvas = railCanvasRef.current;
+            if (!railCanvas) return;
+            const ctx = railCanvas.getContext('2d');
+            if (!ctx) return;
+
+            const rect = railCanvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const w = Math.max(1, Math.floor(rect.width * dpr));
+            const h = Math.max(1, Math.floor(rect.height * dpr));
+
+            const props = stateRef.current.props;
+            const minDb = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMinDb : (props.refLevel - props.displayRange);
+            const maxDb = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMaxDb : props.refLevel;
+            const cmapVersion = colormapVersionRef.current;
+
+            const last = railStateRef.current;
+            if (
+                last.w === w &&
+                last.h === h &&
+                last.refLevel === props.refLevel &&
+                last.displayRange === props.displayRange &&
+                last.minDb === minDb &&
+                last.maxDb === maxDb &&
+                last.cmapVersion === cmapVersion
+            ) {
+                return;
+            }
+
+            railStateRef.current = { w, h, refLevel: props.refLevel, displayRange: props.displayRange, minDb, maxDb, cmapVersion };
+
+            if (railCanvas.width !== w) railCanvas.width = w;
+            if (railCanvas.height !== h) railCanvas.height = h;
+
+            const img = ctx.createImageData(w, h);
+            const out = img.data;
+            const cmap = colormapDataRef.current;
+            const span = Math.max(1e-6, maxDb - minDb);
+
+            for (let y = 0; y < h; y++) {
+                const tAxis = h > 1 ? (y / (h - 1)) : 0;
+                const db = props.refLevel - (tAxis * props.displayRange);
+                const intensity = Math.max(0, Math.min(1, (db - minDb) / span));
+                const idx = Math.max(0, Math.min(255, Math.round(intensity * 255)));
+                const c = idx * 4;
+                const r = cmap[c];
+                const g = cmap[c + 1];
+                const b = cmap[c + 2];
+                const a = cmap[c + 3];
+                for (let x = 0; x < w; x++) {
+                    const o = (y * w + x) * 4;
+                    out[o] = r;
+                    out[o + 1] = g;
+                    out[o + 2] = b;
+                    out[o + 3] = a;
+                }
+            }
+            ctx.putImageData(img, 0, 0);
+        };
+
         const render = (now: number) => {
             const state = stateRef.current;
             const { fftSize, frameQueue } = state;
@@ -441,6 +515,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.clear(gl.COLOR_BUFFER_BIT);
 
             if (fftSize === 0) {
+                drawColorRail();
                 rafRef.current = requestAnimationFrame(render);
                 return;
             }
@@ -497,6 +572,8 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.uniform1f(gl.getUniformLocation(pSpecLine, 'u_maxDb'), state.props.refLevel);
             gl.drawArrays(gl.LINE_STRIP, 0, currentFftSize);
             gl.disable(gl.BLEND);
+
+            drawColorRail();
 
             // Update Marker DOM positions
             const H = state.waterfallHeight;
@@ -625,6 +702,9 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 className="absolute top-0 left-0 right-0 pointer-events-none overflow-hidden"
                 style={{ height: `${spectrumHeightRatio * 100}%` }}
             >
+                <div className="absolute top-0 left-0 w-1 z-10 pointer-events-none" style={{ bottom: '6px' }}>
+                    <canvas ref={railCanvasRef} className="block w-full h-full" />
+                </div>
                 {/* dB Scale Interaction Zone */}
                 <div
                     className="absolute top-0 left-0 bottom-0 w-12 z-40 cursor-ns-resize hover:bg-white/5 active:bg-white/10 transition-colors pointer-events-auto"
@@ -672,7 +752,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                     >
                         <div
                             className={cn(
-                                "bg-black/60 text-xs text-white/90 px-1 font-mono rounded-r border-l-2 border-white/20 transition-opacity",
+                                "bg-black/60 text-xs text-white/90 px-1 ml-3 font-mono rounded-r border-l-2 border-white/20 transition-opacity",
                                 t.percent > 95 ? "opacity-0" : "opacity-100"
                             )}
                         >

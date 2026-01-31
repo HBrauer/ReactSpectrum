@@ -789,13 +789,13 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                     >
                         <div
                             className={cn(
-                                "bg-black/60 text-xs text-white/90 px-1 ml-3 font-mono rounded-r border-l-2 border-white/20 transition-opacity",
+                                "bg-black/60 text-xs text-white/90 px-1 ml-1 font-mono rounded-r transition-opacity",
                                 t.percent > 95 ? "opacity-0" : "opacity-100"
                             )}
                         >
                             {t.val}
                         </div>
-                        <div className="w-full h-px bg-white/10" style={{ width: dimensions.width }} />
+                        <div className="ml-1 h-px bg-transparent w-[calc(100%-0.25rem)]" style={{ width: dimensions.width }} />
                     </div>
                 ))}
             </div>

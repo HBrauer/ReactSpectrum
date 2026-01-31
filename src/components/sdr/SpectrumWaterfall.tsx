@@ -432,13 +432,27 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
             // Update Marker DOM positions
             const H = state.waterfallHeight;
+            const durationSec = H / state.props.targetRate;
+            const nowMs = state.renderTime * 1000;
+
             markersRef.current.forEach(m => {
                 const el = markerDomRefs.current.get(m.id);
                 if (el) {
-                    let dist = (state.waterfallRow - m.rowIndex + H) % H;
-                    let pct = (dist / H) * 100;
-                    el.style.top = `${pct}%`;
-                    el.style.opacity = pct > 98 ? '0' : '1';
+                    // Check age
+                    const ageSec = (nowMs - m.id) / 1000;
+
+                    if (ageSec > durationSec) {
+                        // Too old, hide completely (it will be removed from state eventually in the 2s loop)
+                        el.style.display = 'none';
+                    } else {
+                        el.style.display = 'block';
+
+                        let dist = (state.waterfallRow - m.rowIndex + H) % H;
+                        let pct = (dist / H) * 100;
+                        el.style.top = `${pct}%`;
+                        // Fade out if near bottom
+                        el.style.opacity = pct > 98 ? '0' : '1';
+                    }
                 }
             });
 

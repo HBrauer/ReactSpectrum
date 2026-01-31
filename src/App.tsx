@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { SpectrumWaterfall } from '@/components/sdr/SpectrumWaterfall';
 
 function App() {
-  const [fftData, setFftData] = useState<Float32Array>(new Float32Array(2048));
+  const [fftData, setFftData] = useState<{ bins: Float32Array; time: number; seq: number }>({
+    bins: new Float32Array(2048),
+    time: Date.now() / 1000,
+    seq: 0,
+  });
   const [centerFreq, setCenterFreq] = useState(100e6); // 100 MHz
   const [bandwidth] = useState(2e6); // 2 MHz span
   const [colorMap, setColorMap] = useState('turbo');
@@ -12,9 +16,15 @@ function App() {
     const size = 2048;
     const buffer = new Float32Array(size);
     let time = 0;
+    let seq = 0;
 
     const interval = setInterval(() => {
+      // Advance simulated signal time
       time += 0.05;
+      seq++;
+
+      // Use current wall clock for the packet timestamp
+      const now = Date.now() / 1000;
 
       // Generate noise + signals
       for (let i = 0; i < size; i++) {
@@ -38,8 +48,12 @@ function App() {
         buffer[i] = noise;
       }
 
-      setFftData(new Float32Array(buffer));
-    }, 33); // ~30 FPS
+      setFftData({
+        bins: new Float32Array(buffer),
+        time: now,
+        seq: seq
+      });
+    }, 20); // Send at 50Hz (20ms) to test jitter buffer
 
     return () => clearInterval(interval);
   }, []);
@@ -81,10 +95,11 @@ function App() {
       <div className="flex-1 w-full relative">
         <SpectrumWaterfall
           data={{
-            fftBins: fftData,
+            fftBins: fftData.bins,
             frequency: centerFreq,
             bandwidth: bandwidth,
-            time: Date.now(),
+            time: fftData.time,
+            seq: fftData.seq,
           }}
           refLevel={-20}
           displayRange={100}

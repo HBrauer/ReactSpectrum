@@ -8,7 +8,8 @@ import { useDbTicks, useFrequencyTicks } from './axis-utils';
 export interface SpectrumData {
     frequency: number;
     bandwidth: number;
-    time?: number;
+    time: number; // Required now
+    seq?: number; // Optional sequence number
     fftBins: Float32Array;
 }
 
@@ -20,6 +21,8 @@ export interface SpectrumWaterfallProps {
     showPeakHold?: boolean;
     colorMap?: string;
     className?: string;
+    targetRate?: number; // Target lines per second, default 50
+    jitterBufferMs?: number; // Buffer depth in ms, default 200
 }
 
 export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
@@ -30,8 +33,10 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     showPeakHold = false,
     colorMap = 'turbo',
     className,
+    targetRate = 50,
+    jitterBufferMs = 200,
 }) => {
-    const { fftBins, frequency: centerFrequency, bandwidth, time } = data;
+    const { frequency: centerFrequency, bandwidth } = data;
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rafRef = useRef<number | null>(null);
@@ -49,6 +54,37 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     const markerDomRefs = useRef<Map<number, HTMLDivElement>>(new Map());
     const lastMarkerTime = useRef<number>(0);
 
+    // --- State Refs for WebGL and Logic ---
+    const stateRef = useRef({
+        // WebGL Resources
+        gl: null as WebGL2RenderingContext | null,
+        spectrumVao: null as WebGLVertexArrayObject | null,
+        waterfallVao: null as WebGLVertexArrayObject | null,
+        programSpectrumLine: null as WebGLProgram | null,
+        programSpectrumFill: null as WebGLProgram | null,
+        programWaterfall: null as WebGLProgram | null,
+        waterfallTexture: null as WebGLTexture | null,
+        colormapTexture: null as WebGLTexture | null,
+        spectrumDataTexture: null as WebGLTexture | null,
+
+        // Data State
+        fftSize: 0,
+        averagedBins: new Float32Array(0),
+
+        // Waterfall State
+        waterfallRow: 0,
+        waterfallHeight: 1024, // Increased height for smoother faster scrolling if needed
+
+        // Time-Based Rendering State
+        frameQueue: [] as SpectrumData[],
+        renderTime: 0, // Current playhead time
+        lastRafTime: 0,
+        accumulator: 0,
+
+        // Props Cache
+        props: { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs },
+    });
+
     useEffect(() => {
         if (!containerRef.current) return;
         const observer = new ResizeObserver((entries) => {
@@ -63,50 +99,72 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         return () => observer.disconnect();
     }, []);
 
-    const stateRef = useRef({
-        fftBins: new Float32Array(0),
-        averagedBins: new Float32Array(0),
-        fftSize: 0,
-        waterfallTexture: null as WebGLTexture | null,
-        waterfallRow: 0,
-        waterfallHeight: 512,
-        colormapTexture: null as WebGLTexture | null,
-        spectrumDataTexture: null as WebGLTexture | null,
-
-        spectrumVao: null as WebGLVertexArrayObject | null,
-        waterfallVao: null as WebGLVertexArrayObject | null,
-
-        programSpectrumLine: null as WebGLProgram | null,
-        programSpectrumFill: null as WebGLProgram | null,
-        programWaterfall: null as WebGLProgram | null,
-
-        gl: null as WebGL2RenderingContext | null,
-        props: { refLevel, displayRange, colorMap, averaging, showPeakHold },
-        currentTime: 0,
-    });
-
+    // Update props in ref
     useEffect(() => {
-        stateRef.current.props = { refLevel, displayRange, colorMap, averaging, showPeakHold };
+        stateRef.current.props = { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs };
         const gl = stateRef.current.gl;
         if (gl && stateRef.current.colormapTexture) {
-            gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, stateRef.current.colormapTexture);
             const data = generateColorMap(colorMap as any);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
         }
-    }, [refLevel, displayRange, colorMap, averaging, showPeakHold]);
+    }, [refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs]);
 
+    // Data Ingestion: Push to Queue
     useEffect(() => {
-        if (fftBins && fftBins.length > 0) {
-            if (fftBins.length !== stateRef.current.fftSize) {
-                stateRef.current.fftSize = fftBins.length;
-                stateRef.current.averagedBins = new Float32Array(fftBins);
-            }
-            stateRef.current.fftBins = fftBins as any;
-        }
-        stateRef.current.currentTime = time || Date.now();
-    }, [fftBins, time]);
+        if (!data || !data.fftBins || data.fftBins.length === 0) return;
 
+        const state = stateRef.current;
+
+        // Validate / Init FFT Size
+        if (data.fftBins.length !== state.fftSize) {
+            state.fftSize = data.fftBins.length;
+            state.averagedBins = new Float32Array(data.fftBins);
+            // Re-allocate textures if needed? Handled in render loop usually or explicitly here
+            // but for simplicity we'll handle resizing in render loop detector
+        }
+
+        // Insert into sorted queue
+        // Usually data arrives in order, but verify
+        const queue = state.frameQueue;
+
+        // Simple optimization: if queue empty or new data is newer than last, push
+        if (queue.length === 0 || data.time > queue[queue.length - 1].time) {
+            queue.push(data);
+        } else {
+            // Insert sorted (rare case for simple UDP/WS streams but good for jitter)
+            let i = queue.length - 1;
+            while (i >= 0 && queue[i].time > data.time) {
+                i--;
+            }
+            queue.splice(i + 1, 0, data);
+        }
+
+        // Initialize Render Time if not started
+        if (state.renderTime === 0) {
+            state.renderTime = data.time - (state.props.jitterBufferMs / 1000);
+            // Also reset averaged bins to this first frame
+            state.averagedBins.set(data.fftBins);
+        }
+
+        // Latency Cap: If queue is too far ahead of renderTime, drop old frames or jump renderTime
+        // Ideally we just keep queue length bounded
+        const maxQueueSize = Math.ceil(state.props.targetRate * 2); // 2 seconds buffer max
+        if (queue.length > maxQueueSize) {
+            // Drop oldest
+            queue.shift();
+            // If we are getting too far behind, bump renderTime
+            // renderTime should not be older than queue[0].time - jitterBuffer
+            // ... logic is complex, for now simple "keep buffer reasonable"
+            if (queue[0].time > state.renderTime + (state.props.jitterBufferMs / 1000) * 2) {
+                // We fell waaaay behind? Jump.
+                state.renderTime = queue[0].time - (state.props.jitterBufferMs / 1000);
+            }
+        }
+
+    }, [data]);
+
+    // WebGL Init and Loop
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -118,6 +176,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         }
         stateRef.current.gl = gl;
 
+        // --- Init Shaders ---
         const pSpecLine = createProgram(gl, SPECTRUM_VS, SPECTRUM_FS);
         const pSpecFill = createProgram(gl, SPECTRUM_FILL_VS, SPECTRUM_FILL_FS);
         const pWaterfall = createProgram(gl, WATERFALL_VS, WATERFALL_FS);
@@ -128,11 +187,13 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         stateRef.current.programSpectrumFill = pSpecFill;
         stateRef.current.programWaterfall = pWaterfall;
 
+        // --- Init VAOs ---
         const sVao = gl.createVertexArray();
         stateRef.current.spectrumVao = sVao;
 
         const wVao = gl.createVertexArray();
         gl.bindVertexArray(wVao);
+        // Full screen quad for waterfall shader
         const quadVerts = new Float32Array([-1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, -1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, 1]);
         const wBuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, wBuf);
@@ -145,9 +206,11 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         gl.enableVertexAttribArray(locTex);
         gl.vertexAttribPointer(locTex, 2, gl.FLOAT, false, 16, 8);
 
+        // --- Init Textures ---
         const extLinear = gl.getExtension('OES_texture_float_linear');
         const filter = extLinear ? gl.LINEAR : gl.NEAREST;
 
+        // Waterfall History Texture
         const wTex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, wTex);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
@@ -156,6 +219,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
         stateRef.current.waterfallTexture = wTex;
 
+        // Spectrum Data (Current Line) Texture
         const sDataTex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, sDataTex);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -164,6 +228,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         stateRef.current.spectrumDataTexture = sDataTex;
 
+        // Colormap Texture
         const cmTex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, cmTex);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -175,10 +240,133 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
         let currentFftSize = 0;
 
-        const render = () => {
+        // Render Loop
+        const render = (now: number) => {
             const state = stateRef.current;
-            const { fftBins } = state;
+            const { fftSize, frameQueue } = state;
 
+            // 1. Calculate Delta Time
+            if (state.lastRafTime === 0) state.lastRafTime = now;
+            const dt = (now - state.lastRafTime) / 1000; // seconds
+            state.lastRafTime = now;
+
+            // 2. Add to Accumulator
+            state.accumulator += dt;
+            const stepTime = 1.0 / state.props.targetRate;
+
+            // 3. Process Logic Steps (Fixed Time Step)
+            // Limit max steps to avoid spiral of death
+            let steps = 0;
+            const maxSteps = 10;
+
+            // Texture resize check needs to be outside loop potentially, or handled carefully
+            if (fftSize > 0 && fftSize !== currentFftSize) {
+                currentFftSize = fftSize;
+                gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, currentFftSize, state.waterfallHeight, 0, gl.RED, gl.FLOAT, null);
+                gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, currentFftSize, 1, 0, gl.RED, gl.FLOAT, null);
+            }
+
+            while (state.accumulator >= stepTime && steps < maxSteps && fftSize > 0) {
+                state.accumulator -= stepTime;
+                state.renderTime += stepTime;
+                steps++;
+
+                // --- Pick Frame Logic ---
+                // Find frames around renderTime
+                // frameQueue is sorted by time
+
+                // Remove old frames
+                while (frameQueue.length > 2 && frameQueue[1].time < state.renderTime) {
+                    frameQueue.shift();
+                }
+
+                let displayBins: Float32Array | null = null;
+
+                if (frameQueue.length === 0) {
+                    // No data? 
+                    // displayBins remains null (or noise)
+                }
+                else if (state.renderTime < frameQueue[0].time) {
+                    // We are asking for time BEFORE our buffer? 
+                    // Just hold first frame? or blank?
+                    displayBins = frameQueue[0].fftBins;
+                }
+                else if (frameQueue.length === 1) {
+                    // Only one frame, hold it
+                    displayBins = frameQueue[0].fftBins;
+                }
+                else {
+                    // Interpolate between [0] and [1]
+                    const f0 = frameQueue[0];
+                    const f1 = frameQueue[1];
+                    // renderTime should be between f0.time and f1.time
+
+                    if (state.renderTime >= f1.time) {
+                        // Should have been shifted above, but safety fallback
+                        displayBins = f1.fftBins;
+                    } else {
+                        const alpha = (state.renderTime - f0.time) / (f1.time - f0.time);
+                        // Clamp alpha 0..1
+                        const a = Math.max(0, Math.min(1, alpha));
+
+                        // Perform interpolation
+                        // We can't easily alloc a new array every tick (GC churn). 
+                        // But JS typed arrays are fast. Let's try simple way first.
+                        // Optimization: reuse a temp buffer if needed.
+                        const len = fftSize;
+                        if (!state.averagedBins || state.averagedBins.length !== len) state.averagedBins = new Float32Array(len);
+
+                        const out = state.averagedBins;
+                        const b0 = f0.fftBins;
+                        const b1 = f1.fftBins;
+
+                        for (let i = 0; i < len; i++) {
+                            out[i] = b0[i] * (1 - a) + b1[i] * a;
+                        }
+                        displayBins = out;
+                    }
+                }
+
+                if (displayBins) {
+                    // Upload to Waterfall
+                    gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
+                    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+                    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, state.waterfallRow, currentFftSize, 1, gl.RED, gl.FLOAT, displayBins);
+                    state.waterfallRow = (state.waterfallRow + 1) % state.waterfallHeight;
+
+                    // Also update averagedBins for Main Spectrum view (smoothing handled separately if desired, 
+                    // but for this implementation we simply use the interpolated value as the "current" value for the spectrum line)
+                    // If we want separate averaging for Spectrum Line (the 'averaging' prop), we should apply that on top.
+
+                    // We already wrote to averagedBins above for interpolation.
+                    // If we didn't interpolate (exact frame), we might need to copy.
+                    if (displayBins !== state.averagedBins) {
+                        state.averagedBins.set(displayBins);
+                    }
+
+                    // Apply EMA smoothing for the Spectrum Line view specifically? 
+                    // The original code applied EMA to the waterfall bins effectively if they came in fast.
+                    // Here, displayBins IS the signal at this time.
+                    // We can keep `averagedBins` as the "interpolated instant" value.
+                }
+
+                // Markers Check
+                const currentTime = state.renderTime * 1000;
+                if (currentTime - lastMarkerTime.current > 2000) { // Every 2s
+                    const date = new Date(currentTime);
+                    const timeStr = date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    const newMarker = { id: currentTime, label: timeStr, rowIndex: state.waterfallRow };
+
+                    const newMarkers = [...markersRef.current, newMarker].slice(-20);
+                    markersRef.current = newMarkers;
+                    setMarkers(newMarkers);
+                    lastMarkerTime.current = currentTime;
+                }
+            }
+
+            // 4. DRAW
             if (resizeCanvas(canvas)) {
                 gl.viewport(0, 0, canvas.width, canvas.height);
             }
@@ -186,98 +374,19 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.clearColor(0, 0, 0, 1);
             gl.clear(gl.COLOR_BUFFER_BIT);
 
-            if (fftBins.length === 0) {
+            if (fftSize === 0) {
                 rafRef.current = requestAnimationFrame(render);
                 return;
             }
 
-            if (fftBins.length !== currentFftSize) {
-                currentFftSize = fftBins.length;
-                gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, currentFftSize, state.waterfallHeight, 0, gl.RED, gl.FLOAT, null);
-                gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, currentFftSize, 1, 0, gl.RED, gl.FLOAT, null);
-            }
-
-            const factor = Math.max(0, Math.min(1, state.props.averaging || 0));
-            if (state.averagedBins.length !== currentFftSize) {
-                state.averagedBins = new Float32Array(fftBins);
-            } else if (factor > 0) {
-                const alpha = factor;
-                const oneMinusAlpha = 1.0 - alpha;
-                for (let i = 0; i < currentFftSize; i++) {
-                    state.averagedBins[i] = state.averagedBins[i] * alpha + fftBins[i] * oneMinusAlpha;
-                }
-            } else {
-                state.averagedBins.set(fftBins);
-            }
-            const displayBins = state.averagedBins;
-
-            gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
-            gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, state.waterfallRow, currentFftSize, 1, gl.RED, gl.FLOAT, displayBins);
-
-            // Update Markers Logic
-            const now = state.currentTime || Date.now();
-            if (now - lastMarkerTime.current > 5000) {
-                const date = new Date(now);
-                const timeStr = date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                // Optional: add milliseconds if needed for high precision, but HH:MM:SS is usually fine
-                // const ms = date.getMilliseconds().toString().padStart(3, '0');
-                // const label = `${timeStr}.${ms}`;
-                const label = timeStr;
-                const newMarker = { id: now, label: label, rowIndex: state.waterfallRow };
-
-                // Update both Ref (for immediate thread access) and State (for DOM render)
-                const newMarkers = [...markersRef.current, newMarker].filter(() => {
-                    // Basic age assumption: if it's too old we remove it next cycle
-                    // We'll rely on visual scroll. If it's old it naturally scrolls off.
-                    // Prune if > 50 markers just to be safe.
-                    return true;
-                }).slice(-20); // Keep max 20 active markers
-
-                markersRef.current = newMarkers;
-                setMarkers(newMarkers);
-                lastMarkerTime.current = now;
-            }
-
-            // Update positions
-            const H = state.waterfallHeight;
-            markersRef.current.forEach(m => {
-                const el = markerDomRefs.current.get(m.id);
-                if (el) {
-                    // Calculate distance from current row
-                    // This logic assumes waterfall moves DOWN
-                    // shader: Y = fract(v_texCoord.y + offset)
-                    // offset = waterfallRow / H
-                    // The "top" of the view corresponds to T = 0 in shader => fract(0 + offset) = offset = current Row
-                    // So `waterfallRow` is at the visual top.
-                    // Rows before it are visually below.
-
-                    // If m.rowIndex is where we inserted.
-                    // Distance = (waterfallRow - m.rowIndex + H) % H
-                    // This is how many rows "ago" it was.
-                    // distance = 0 => top.
-                    // distance = H/2 => middle.
-
-                    let dist = (state.waterfallRow - m.rowIndex + H) % H;
-                    let pct = (dist / H) * 100;
-
-                    el.style.top = `${pct}%`;
-
-                    // Fade out if near bottom (optional)
-                    el.style.opacity = pct > 98 ? '0' : '1';
-                }
-            });
-
-            state.waterfallRow = (state.waterfallRow + 1) % state.waterfallHeight;
-
+            // Update Spectrum Texture for Line/Fill
             gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
-            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, currentFftSize, 1, gl.RED, gl.FLOAT, displayBins);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, currentFftSize, 1, gl.RED, gl.FLOAT, state.averagedBins);
 
             const hSplit = Math.floor(canvas.height * 0.66);
-            gl.viewport(0, 0, canvas.width, hSplit);
 
+            // Draw Waterfall
+            gl.viewport(0, 0, canvas.width, hSplit);
             gl.useProgram(state.programWaterfall);
             gl.bindVertexArray(wVao);
 
@@ -295,38 +404,43 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_maxDb'), state.props.refLevel);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
 
+            // Draw Spectrum
             gl.viewport(0, hSplit, canvas.width, canvas.height - hSplit);
-
             gl.enable(gl.BLEND);
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+            // Fill
             gl.useProgram(state.programSpectrumFill);
             gl.bindVertexArray(state.spectrumVao);
-
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
             gl.uniform1i(gl.getUniformLocation(pSpecFill, 'u_data'), 0);
-
             gl.uniform1f(gl.getUniformLocation(pSpecFill, 'u_bins'), currentFftSize);
             gl.uniform1f(gl.getUniformLocation(pSpecFill, 'u_minDb'), state.props.refLevel - state.props.displayRange);
             gl.uniform1f(gl.getUniformLocation(pSpecFill, 'u_maxDb'), state.props.refLevel);
-
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, currentFftSize * 2);
 
+            // Line
             gl.useProgram(state.programSpectrumLine);
-            gl.bindVertexArray(state.spectrumVao); // Reuse empty VAO
-
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
+            gl.bindVertexArray(state.spectrumVao);
             gl.uniform1i(gl.getUniformLocation(pSpecLine, 'u_data'), 0);
-
             gl.uniform1f(gl.getUniformLocation(pSpecLine, 'u_bins'), currentFftSize);
             gl.uniform1f(gl.getUniformLocation(pSpecLine, 'u_minDb'), state.props.refLevel - state.props.displayRange);
             gl.uniform1f(gl.getUniformLocation(pSpecLine, 'u_maxDb'), state.props.refLevel);
-
             gl.drawArrays(gl.LINE_STRIP, 0, currentFftSize);
-
             gl.disable(gl.BLEND);
+
+            // Update Marker DOM positions
+            const H = state.waterfallHeight;
+            markersRef.current.forEach(m => {
+                const el = markerDomRefs.current.get(m.id);
+                if (el) {
+                    let dist = (state.waterfallRow - m.rowIndex + H) % H;
+                    let pct = (dist / H) * 100;
+                    el.style.top = `${pct}%`;
+                    el.style.opacity = pct > 98 ? '0' : '1';
+                }
+            });
 
             rafRef.current = requestAnimationFrame(render);
         };
@@ -357,12 +471,12 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         const freqPerPixel = bandwidth / rect.width;
         const freq = freqStart + x * freqPerPixel;
 
-        const spectrumHeight = rect.height * 0.34;
+        const specHeight = rect.height * 0.34;
         let db = -Infinity;
 
-        if (y < spectrumHeight) {
+        if (y < specHeight) {
             const dbRange = displayRange;
-            const dbPerPixel = dbRange / spectrumHeight;
+            const dbPerPixel = dbRange / specHeight;
             db = refLevel - (y * dbPerPixel);
         }
         setHoverInfo({ freq, db, x, y });
@@ -381,11 +495,10 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 ref={canvasRef}
                 className="block w-full h-full"
             />
-
-            {/* dB Scale (Left Overlay) */}
+            {/* Same overlays as before */}
             <div
                 className="absolute top-0 left-0 right-0 pointer-events-none overflow-hidden"
-                style={{ height: '34%' }} // Only top section
+                style={{ height: '34%' }}
             >
                 {dbTicks.map(t => (
                     <div
@@ -396,7 +509,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                         <div
                             className={cn(
                                 "bg-black/60 text-xs text-white/90 px-1 font-mono rounded-r border-l-2 border-white/20 transition-opacity",
-                                t.percent > 95 ? "opacity-0" : "opacity-100" // Hide label if too close to bottom boundary
+                                t.percent > 95 ? "opacity-0" : "opacity-100"
                             )}
                         >
                             {t.val}
@@ -406,12 +519,10 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 ))}
             </div>
 
-            {/* Frequency Scale (Middle Overlay) */}
             <div
                 className="absolute left-0 right-0 h-6 bg-black flex items-center border-y border-white/20 pointer-events-none z-20"
                 style={{ top: '34%' }}
             >
-                {/* Ticks */}
                 {freqTicks.map(t => (
                     <div
                         key={t.val}
@@ -421,18 +532,15 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                         <span className="relative z-10 text-[10px] text-white font-mono bg-black px-1 whitespace-nowrap">
                             {t.label}
                         </span>
-                        {/* Full height grid line */}
                         <div
                             className="w-px bg-white/10 absolute left-1/2 -translate-x-1/2 pointer-events-none"
                             style={{ height: dimensions.height, top: -spectrumHeight }}
                         />
                     </div>
                 ))}
-                {/* Center Line highlight (Axis only) */}
                 <div className="absolute top-0 left-1/2 w-0.5 h-[5px] bg-red-500"></div>
             </div>
 
-            {/* Waterfall Markers Container (Bottom 66%) */}
             <div
                 className="absolute left-0 right-0 pointer-events-none overflow-hidden"
                 style={{ top: '34%', bottom: 0 }}
@@ -454,13 +562,11 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 ))}
             </div>
 
-            {/* Info Overlay */}
             <div className="absolute top-2 right-2 text-xs text-white/70 font-mono pointer-events-none select-none bg-black/60 p-2 rounded text-right border border-white/10">
                 <div className="font-bold text-white">{(centerFrequency / 1e6).toFixed(3)} MHz</div>
                 <div className="text-white/50">Span: {(bandwidth / 1e6).toFixed(3)} MHz</div>
             </div>
 
-            {/* Hover Readout */}
             {hoverInfo && (
                 <div
                     className="absolute pointer-events-none bg-black/90 text-white text-[10px] font-mono p-1 rounded border border-white/20 whitespace-nowrap z-50"
@@ -476,3 +582,4 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         </div>
     );
 };
+

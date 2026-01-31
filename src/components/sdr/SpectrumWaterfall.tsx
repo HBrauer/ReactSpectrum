@@ -89,6 +89,10 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         // Waterfall State
         waterfallRow: 0,
         waterfallHeight: 1024, // Increased height for smoother faster scrolling if needed
+        waterfallMinDb: -120,
+        waterfallMaxDb: 0,
+        waterfallScaleReady: false,
+        waterfallScaleAlpha: 0.05,
 
         // Time-Based Rendering State
         frameQueue: [] as SpectrumData[],
@@ -362,6 +366,29 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 }
 
                 if (displayBins) {
+                    // Update waterfall color scale from data (independent of dB axis controls)
+                    let minDb = Infinity;
+                    let maxDb = -Infinity;
+                    for (let i = 0; i < displayBins.length; i++) {
+                        const v = displayBins[i];
+                        if (v < minDb) minDb = v;
+                        if (v > maxDb) maxDb = v;
+                    }
+                    if (Number.isFinite(minDb) && Number.isFinite(maxDb)) {
+                        if (!state.waterfallScaleReady) {
+                            state.waterfallMinDb = minDb;
+                            state.waterfallMaxDb = maxDb;
+                            state.waterfallScaleReady = true;
+                        } else {
+                            const a = state.waterfallScaleAlpha;
+                            state.waterfallMinDb = state.waterfallMinDb * (1 - a) + minDb * a;
+                            state.waterfallMaxDb = state.waterfallMaxDb * (1 - a) + maxDb * a;
+                        }
+                        if (state.waterfallMaxDb - state.waterfallMinDb < 1) {
+                            state.waterfallMaxDb = state.waterfallMinDb + 1;
+                        }
+                    }
+
                     // Upload to Waterfall
                     gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
                     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
@@ -441,8 +468,8 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
             const offset = state.waterfallRow / state.waterfallHeight;
             gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_offset'), offset);
-            gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_minDb'), state.props.refLevel - state.props.displayRange);
-            gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_maxDb'), state.props.refLevel);
+            gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_minDb'), state.waterfallMinDb);
+            gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_maxDb'), state.waterfallMaxDb);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
 
             // Draw Spectrum

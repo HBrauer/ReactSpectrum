@@ -22,6 +22,7 @@ export interface SpectrumWaterfallProps {
     className?: string;
     targetRate?: number; // Target lines per second, default 50
     jitterBufferMs?: number; // Buffer depth in ms, default 200
+    onRefLevelChange?: (val: number) => void;
 }
 
 export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
@@ -34,6 +35,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     className,
     targetRate = 50,
     jitterBufferMs = 200,
+    onRefLevelChange,
 }) => {
     // We use the latest frame for "current" metadata (freq, span)
     // Data is guaranteed to be an array now (though might be empty if parent logic fails, but we assume it's valid)
@@ -511,8 +513,11 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
     const [hoverInfo, setHoverInfo] = React.useState<{ freq: number; db: number; x: number; y: number } | null>(null);
 
+    const [isDraggingDbScale, setIsDraggingDbScale] = useState(false);
+    const lastMouseY = useRef(0);
+
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        // Drag Logic
+        // 1. Dragging Divider
         if (isDragging) {
             const rect = containerRef.current?.getBoundingClientRect();
             if (rect) {
@@ -523,6 +528,22 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 if (r > 0.9) r = 0.9;
                 setSpectrumHeightRatio(r);
             }
+            return;
+        }
+
+        // 2. Dragging dB Scale
+        if (isDraggingDbScale && onRefLevelChange) {
+            const dy = e.clientY - lastMouseY.current;
+            lastMouseY.current = e.clientY;
+
+            // Calculate dB per pixel
+            // spectrumHeight is the pixel height of the spectrum view
+            const dbPerPixel = displayRange / spectrumHeight;
+            const deltaDb = dy * dbPerPixel;
+
+            // Dragging DOWN (positive dy) should move the view UP (higher numbers appear), so refLevel increases?
+            // If -20 is at top, and I drag down, I want -20 to be lower. The new top should be 0. So refLevel increases.
+            onRefLevelChange(refLevel + deltaDb);
             return;
         }
 
@@ -550,9 +571,13 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     const handleMouseLeave = () => {
         setHoverInfo(null);
         if (isDragging) setIsDragging(false);
+        if (isDraggingDbScale) setIsDraggingDbScale(false);
     };
 
-    const handleMouseUp = () => setIsDragging(false);
+    const handleMouseUp = () => {
+        setIsDragging(false);
+        setIsDraggingDbScale(false);
+    };
 
     return (
         <div
@@ -571,6 +596,18 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 className="absolute top-0 left-0 right-0 pointer-events-none overflow-hidden"
                 style={{ height: `${spectrumHeightRatio * 100}%` }}
             >
+                {/* dB Scale Interaction Zone */}
+                <div
+                    className="absolute top-0 left-0 bottom-0 w-12 z-40 cursor-ns-resize hover:bg-white/5 active:bg-white/10 transition-colors pointer-events-auto"
+                    title="Drag to adjust reference level"
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsDraggingDbScale(true);
+                        lastMouseY.current = e.clientY;
+                    }}
+                />
+
                 {dbTicks.map(t => (
                     <div
                         key={t.val}

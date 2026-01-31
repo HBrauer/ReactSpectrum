@@ -8,6 +8,8 @@ function App() {
   const [colorMap, setColorMap] = useState('turbo');
   const [avg, setAvg] = useState(0.5);
 
+  const [refLevel, setRefLevel] = useState(-20);
+
   useEffect(() => {
     // Spawn worker
     const worker = new Worker(new URL('./spectrum.worker.ts', import.meta.url), { type: 'module' });
@@ -67,7 +69,8 @@ function App() {
               bandwidth: bandwidth,
               time: d.time,
             }))}
-            refLevel={-20}
+            refLevel={refLevel}
+            onRefLevelChange={setRefLevel}
             displayRange={100}
             averaging={avg}
             colorMap={colorMap}

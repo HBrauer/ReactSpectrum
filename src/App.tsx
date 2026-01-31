@@ -70,13 +70,11 @@ function App() {
               frequency: centerFreq,
               bandwidth: bandwidth,
               time: d.time,
-              seq: d.seq
             })) : {
               fftBins: fftData.bins,
               frequency: centerFreq,
               bandwidth: bandwidth,
               time: fftData.time,
-              seq: fftData.seq,
             }}
             refLevel={-20}
             displayRange={100}

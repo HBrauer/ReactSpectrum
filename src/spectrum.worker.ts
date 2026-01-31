@@ -6,7 +6,6 @@ const SIZE = 2048;
 let intervalId: any = null;
 let lastTickTime = 0;
 let simTime = 0;
-let seq = 0;
 
 self.onmessage = (e) => {
     if (e.data === 'start') {
@@ -37,7 +36,6 @@ function tick() {
 
     for (let f = 0; f < framesToGen; f++) {
         simTime += FRAME_PERIOD_SEC;
-        seq++;
 
         // Calculate timestamp for this specific frame
         // "now" is the wake up time. logic matches App.tsx attempt
@@ -70,7 +68,6 @@ function tick() {
         batch.push({
             bins: buffer,
             time: frameTs / 1000.0,
-            seq: seq
         });
     }
 

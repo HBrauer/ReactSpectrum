@@ -9,7 +9,6 @@ export interface SpectrumData {
     frequency: number;
     bandwidth: number;
     time: number; // Required now
-    seq?: number; // Optional sequence number
     fftBins: Float32Array;
 }
 

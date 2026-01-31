@@ -9,6 +9,7 @@ function App() {
   const [avg, setAvg] = useState(0.5);
 
   const [refLevel, setRefLevel] = useState(-20);
+  const [displayRange, setDisplayRange] = useState(100);
 
   useEffect(() => {
     // Spawn worker
@@ -71,7 +72,8 @@ function App() {
             }))}
             refLevel={refLevel}
             onRefLevelChange={setRefLevel}
-            displayRange={100}
+            displayRange={displayRange}
+            onDisplayRangeChange={setDisplayRange}
             averaging={avg}
             colorMap={colorMap}
             className="border border-white/10"

@@ -23,6 +23,7 @@ export interface SpectrumWaterfallProps {
     targetRate?: number; // Target lines per second, default 50
     jitterBufferMs?: number; // Buffer depth in ms, default 200
     onRefLevelChange?: (val: number) => void;
+    onDisplayRangeChange?: (val: number) => void;
 }
 
 export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
@@ -36,6 +37,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     targetRate = 50,
     jitterBufferMs = 200,
     onRefLevelChange,
+    onDisplayRangeChange,
 }) => {
     // We use the latest frame for "current" metadata (freq, span)
     // Data is guaranteed to be an array now (though might be empty if parent logic fails, but we assume it's valid)
@@ -599,12 +601,39 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 {/* dB Scale Interaction Zone */}
                 <div
                     className="absolute top-0 left-0 bottom-0 w-12 z-40 cursor-ns-resize hover:bg-white/5 active:bg-white/10 transition-colors pointer-events-auto"
-                    title="Drag to adjust reference level"
+                    title="Drag to adjust reference level. scroll to zoom"
                     onMouseDown={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         setIsDraggingDbScale(true);
                         lastMouseY.current = e.clientY;
+                    }}
+                    onWheel={(e) => {
+                        if (!onDisplayRangeChange || !onRefLevelChange) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const y = e.clientY - rect.top;
+                        const relY = y / rect.height;
+
+                        const zoomFactor = 1.1;
+                        let newRange = displayRange;
+
+                        if (e.deltaY < 0) {
+                            newRange = displayRange / zoomFactor;
+                        } else {
+                            newRange = displayRange * zoomFactor;
+                        }
+
+                        if (newRange < 10) newRange = 10;
+                        if (newRange > 200) newRange = 200;
+
+                        // New Ref calculation to pin dB at cursor
+                        const newRefLevel = refLevel + relY * (newRange - displayRange);
+
+                        onDisplayRangeChange(newRange);
+                        onRefLevelChange(newRefLevel);
                     }}
                 />
 

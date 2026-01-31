@@ -8,6 +8,8 @@ function App() {
   const [colorMap, setColorMap] = useState('turbo');
   const [avg, setAvg] = useState(0.5);
   const [waterfallScaleMode, setWaterfallScaleMode] = useState<'auto' | 'fixed'>('auto');
+  const [waterfallFixedMinDb, setWaterfallFixedMinDb] = useState(-120);
+  const [waterfallFixedMaxDb, setWaterfallFixedMaxDb] = useState(0);
 
   const [refLevel, setRefLevel] = useState(-20);
   const [displayRange, setDisplayRange] = useState(100);
@@ -89,6 +91,12 @@ function App() {
             averaging={avg}
             colorMap={colorMap}
             waterfallScaleMode={waterfallScaleMode}
+            waterfallFixedMinDb={waterfallFixedMinDb}
+            waterfallFixedMaxDb={waterfallFixedMaxDb}
+            onWaterfallFixedRangeChange={(minDb, maxDb) => {
+              setWaterfallFixedMinDb(minDb);
+              setWaterfallFixedMaxDb(maxDb);
+            }}
             className="border border-white/10"
           />
         )}

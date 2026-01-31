@@ -20,11 +20,14 @@ export interface SpectrumWaterfallProps {
     showPeakHold?: boolean;
     colorMap?: string;
     waterfallScaleMode?: 'auto' | 'fixed';
+    waterfallFixedMinDb?: number;
+    waterfallFixedMaxDb?: number;
     className?: string;
     targetRate?: number; // Target lines per second, default 50
     jitterBufferMs?: number; // Buffer depth in ms, default 200
     onRefLevelChange?: (val: number) => void;
     onDisplayRangeChange?: (val: number) => void;
+    onWaterfallFixedRangeChange?: (minDb: number, maxDb: number) => void;
 }
 
 export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
@@ -35,11 +38,14 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     showPeakHold = false,
     colorMap = 'turbo',
     waterfallScaleMode = 'auto',
+    waterfallFixedMinDb,
+    waterfallFixedMaxDb,
     className,
     targetRate = 50,
     jitterBufferMs = 200,
     onRefLevelChange,
     onDisplayRangeChange,
+    onWaterfallFixedRangeChange,
 }) => {
     // We use the latest frame for "current" metadata (freq, span)
     // Data is guaranteed to be an array now (though might be empty if parent logic fails, but we assume it's valid)
@@ -61,6 +67,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         maxDb: 0,
         cmapVersion: 0
     });
+    const [localFixedRange, setLocalFixedRange] = useState({ min: -120, max: 0 });
 
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -82,6 +89,11 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     const markersRef = useRef<Array<{ id: number; label: string; rowIndex: number }>>([]);
     const markerDomRefs = useRef<Map<number, HTMLDivElement>>(new Map());
     const lastMarkerTime = useRef<number>(0);
+    const [isRailHover, setIsRailHover] = useState(false);
+    const [draggingRailHandle, setDraggingRailHandle] = useState<null | 'min' | 'max'>(null);
+    const controlledFixed = typeof waterfallFixedMinDb === 'number' && typeof waterfallFixedMaxDb === 'number';
+    const fixedMinDb = controlledFixed ? waterfallFixedMinDb! : localFixedRange.min;
+    const fixedMaxDb = controlledFixed ? waterfallFixedMaxDb! : localFixedRange.max;
 
     // --- State Refs for WebGL and Logic ---
     const stateRef = useRef({
@@ -119,7 +131,18 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         accumulator: 0,
 
         // Props Cache
-        props: { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode },
+        props: {
+            refLevel,
+            displayRange,
+            colorMap,
+            averaging,
+            showPeakHold,
+            targetRate,
+            jitterBufferMs,
+            waterfallScaleMode,
+            waterfallFixedMinDb,
+            waterfallFixedMaxDb
+        },
     });
 
     useEffect(() => {
@@ -138,7 +161,24 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
     // Update props in ref
     useEffect(() => {
-        stateRef.current.props = { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode };
+        stateRef.current.props = {
+            refLevel,
+            displayRange,
+            colorMap,
+            averaging,
+            showPeakHold,
+            targetRate,
+            jitterBufferMs,
+            waterfallScaleMode,
+            waterfallFixedMinDb,
+            waterfallFixedMaxDb
+        };
+        if (typeof waterfallFixedMinDb === 'number' && typeof waterfallFixedMaxDb === 'number') {
+            stateRef.current.waterfallFixedMinDb = waterfallFixedMinDb;
+            stateRef.current.waterfallFixedMaxDb = waterfallFixedMaxDb;
+            stateRef.current.waterfallFixedReady = true;
+            setLocalFixedRange({ min: waterfallFixedMinDb, max: waterfallFixedMaxDb });
+        }
         const data = generateColorMap(colorMap as any);
         colormapDataRef.current = data;
         colormapVersionRef.current += 1;
@@ -147,7 +187,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.bindTexture(gl.TEXTURE_2D, stateRef.current.colormapTexture);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
         }
-    }, [refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode]);
+    }, [refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode, waterfallFixedMinDb, waterfallFixedMaxDb]);
 
     // Data Ingestion: Push to Queue
     useEffect(() => {
@@ -294,11 +334,13 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             const useAuto = !useFixed;
             const autoMin = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMinDb : (props.refLevel - props.displayRange);
             const autoMax = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMaxDb : props.refLevel;
+            const fixedMin = stateRef.current.waterfallFixedMinDb;
+            const fixedMax = stateRef.current.waterfallFixedMaxDb;
             const minDb = useFixed
-                ? (stateRef.current.waterfallFixedReady ? stateRef.current.waterfallFixedMinDb : autoMin)
+                ? (stateRef.current.waterfallFixedReady ? fixedMin : autoMin)
                 : autoMin;
             const maxDb = useFixed
-                ? (stateRef.current.waterfallFixedReady ? stateRef.current.waterfallFixedMaxDb : autoMax)
+                ? (stateRef.current.waterfallFixedReady ? fixedMax : autoMax)
                 : autoMax;
             const cmapVersion = colormapVersionRef.current;
 
@@ -356,6 +398,9 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                         state.waterfallFixedMinDb = state.waterfallMinDb;
                         state.waterfallFixedMaxDb = state.waterfallMaxDb;
                         state.waterfallFixedReady = true;
+                        if (!controlledFixed) {
+                            setLocalFixedRange({ min: state.waterfallFixedMinDb, max: state.waterfallFixedMaxDb });
+                        }
                     } else {
                         state.waterfallFixedReady = false;
                     }
@@ -492,6 +537,9 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                             state.waterfallFixedMinDb = state.waterfallMinDb;
                             state.waterfallFixedMaxDb = state.waterfallMaxDb;
                             state.waterfallFixedReady = true;
+                            if (!controlledFixed) {
+                                setLocalFixedRange({ min: state.waterfallFixedMinDb, max: state.waterfallFixedMaxDb });
+                            }
                         }
                     }
 
@@ -722,6 +770,68 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         setIsDraggingDbScale(false);
     };
 
+    const dbToPercent = (db: number) => {
+        if (displayRange <= 0) return 0;
+        const pct = ((refLevel - db) / displayRange) * 100;
+        return Math.max(0, Math.min(100, pct));
+    };
+
+    useEffect(() => {
+        if (controlledFixed) return;
+        stateRef.current.waterfallFixedMinDb = localFixedRange.min;
+        stateRef.current.waterfallFixedMaxDb = localFixedRange.max;
+        stateRef.current.waterfallFixedReady = true;
+    }, [controlledFixed, localFixedRange]);
+
+    useEffect(() => {
+        if (!draggingRailHandle) return;
+        const onMove = (e: MouseEvent) => {
+            const rect = containerRef.current?.getBoundingClientRect();
+            if (!rect) return;
+            const specHeight = rect.height * spectrumHeightRatio;
+            if (specHeight <= 0 || displayRange === 0) return;
+            const y = Math.min(Math.max(e.clientY - rect.top, 0), specHeight);
+            const db = refLevel - (y / specHeight) * displayRange;
+
+            let minDb = controlledFixed ? waterfallFixedMinDb! : localFixedRange.min;
+            let maxDb = controlledFixed ? waterfallFixedMaxDb! : localFixedRange.max;
+
+            if (draggingRailHandle === 'min') {
+                minDb = Math.min(db, maxDb - 1);
+            } else {
+                maxDb = Math.max(db, minDb + 1);
+            }
+
+            const axisMin = refLevel - displayRange;
+            const axisMax = refLevel;
+            minDb = Math.min(axisMax - 1, Math.max(axisMin, minDb));
+            maxDb = Math.max(axisMin + 1, Math.min(axisMax, maxDb));
+
+            if (onWaterfallFixedRangeChange) {
+                onWaterfallFixedRangeChange(minDb, maxDb);
+            } else {
+                setLocalFixedRange({ min: minDb, max: maxDb });
+            }
+        };
+        const onUp = () => setDraggingRailHandle(null);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onUp);
+        };
+    }, [
+        draggingRailHandle,
+        spectrumHeightRatio,
+        displayRange,
+        refLevel,
+        controlledFixed,
+        waterfallFixedMinDb,
+        waterfallFixedMaxDb,
+        localFixedRange,
+        onWaterfallFixedRangeChange
+    ]);
+
     return (
         <div
             ref={containerRef}
@@ -780,6 +890,34 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                         onRefLevelChange(newRefLevel);
                     }}
                 />
+                <div
+                    className="absolute top-0 left-0 bottom-0 w-3 z-50 pointer-events-auto"
+                    onMouseEnter={() => setIsRailHover(true)}
+                    onMouseLeave={() => setIsRailHover(false)}
+                >
+                    {waterfallScaleMode === 'fixed' && (isRailHover || draggingRailHandle) && (
+                        <>
+                            <div
+                                className="absolute left-0 w-3 h-3 -translate-y-1/2 bg-white/90 border border-black/60 rounded"
+                                style={{ top: `${dbToPercent(fixedMaxDb)}%` }}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setDraggingRailHandle('max');
+                                }}
+                            />
+                            <div
+                                className="absolute left-0 w-3 h-3 -translate-y-1/2 bg-white/90 border border-black/60 rounded"
+                                style={{ top: `${dbToPercent(fixedMinDb)}%` }}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setDraggingRailHandle('min');
+                                }}
+                            />
+                        </>
+                    )}
+                </div>
 
                 {dbTicks.map(t => (
                     <div
@@ -795,7 +933,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                         >
                             {t.val}
                         </div>
-                        <div className="ml-1 h-px bg-transparent w-[calc(100%-0.25rem)]" style={{ width: dimensions.width }} />
+                        <div className="ml-1 h-px bg-white/10 w-[calc(100%-0.25rem)]" style={{ width: dimensions.width }} />
                     </div>
                 ))}
             </div>

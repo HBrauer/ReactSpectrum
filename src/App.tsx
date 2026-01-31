@@ -2,11 +2,7 @@ import { useEffect, useState } from 'react';
 import { SpectrumWaterfall } from '@/components/sdr/SpectrumWaterfall';
 
 function App() {
-  const [fftData, setFftData] = useState<{ bins: Float32Array; time: number; seq: number }>({
-    bins: new Float32Array(2048),
-    time: Date.now() / 1000,
-    seq: 0,
-  });
+  const [fftData, setFftData] = useState<{ bins: Float32Array; time: number; seq: number }[]>([]);
   const [centerFreq, setCenterFreq] = useState(100e6); // 100 MHz
   const [bandwidth] = useState(2e6); // 2 MHz span
   const [colorMap, setColorMap] = useState('turbo');
@@ -65,17 +61,12 @@ function App() {
       <div className="flex-1 w-full relative">
         {fftData && (
           <SpectrumWaterfall
-            data={Array.isArray(fftData) ? fftData.map(d => ({
+            data={fftData.map(d => ({
               fftBins: d.bins,
               frequency: centerFreq,
               bandwidth: bandwidth,
               time: d.time,
-            })) : {
-              fftBins: fftData.bins,
-              frequency: centerFreq,
-              bandwidth: bandwidth,
-              time: fftData.time,
-            }}
+            }))}
             refLevel={-20}
             displayRange={100}
             averaging={avg}

@@ -13,7 +13,7 @@ export interface SpectrumData {
 }
 
 export interface SpectrumWaterfallProps {
-    data: SpectrumData | SpectrumData[];
+    data: SpectrumData[]; // Strict array input
     refLevel?: number;
     displayRange?: number;
     averaging?: number;
@@ -35,9 +35,9 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     targetRate = 50,
     jitterBufferMs = 200,
 }) => {
-    // Handle array or single item for metadata extraction
     // We use the latest frame for "current" metadata (freq, span)
-    const latestData = Array.isArray(data) ? data[data.length - 1] : data;
+    // Data is guaranteed to be an array now (though might be empty if parent logic fails, but we assume it's valid)
+    const latestData = data.length > 0 ? data[data.length - 1] : null;
     const { frequency: centerFrequency, bandwidth } = latestData || { frequency: 100e6, bandwidth: 2e6 };
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -46,9 +46,17 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
+    // Splitter State
+    const [spectrumHeightRatio, setSpectrumHeightRatio] = useState(0.34);
+    const [isDragging, setIsDragging] = useState(false);
+
+    // Ref for renderer linkage
+    const ratioRef = useRef(0.34);
+    useEffect(() => { ratioRef.current = spectrumHeightRatio; }, [spectrumHeightRatio]);
+
     // Axis Hooks
     const freqTicks = useFrequencyTicks(centerFrequency, bandwidth, dimensions.width);
-    const spectrumHeight = dimensions.height * 0.34;
+    const spectrumHeight = dimensions.height * spectrumHeightRatio;
     const dbTicks = useDbTicks(refLevel, displayRange, spectrumHeight);
 
     // Markers
@@ -115,14 +123,12 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
     // Data Ingestion: Push to Queue
     useEffect(() => {
-        if (!data) return;
-
-        const inputs = Array.isArray(data) ? data : [data];
-        if (inputs.length === 0) return;
+        if (!data || data.length === 0) return;
 
         const state = stateRef.current;
 
-        inputs.forEach(d => {
+        // Data is already an array, just iterate
+        data.forEach(d => {
             if (!d.fftBins || d.fftBins.length === 0) return;
 
             // Validate / Init FFT Size
@@ -412,7 +418,9 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, currentFftSize, 1, gl.RED, gl.FLOAT, state.averagedBins);
 
-            const hSplit = Math.floor(canvas.height * 0.66);
+            // Calculate Split with Current Ratio (from ref to ensure fresh)
+            const ratio = ratioRef.current;
+            const hSplit = Math.floor(canvas.height * (1.0 - ratio));
 
             // Draw Waterfall
             gl.viewport(0, 0, canvas.width, hSplit);
@@ -504,6 +512,20 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     const [hoverInfo, setHoverInfo] = React.useState<{ freq: number; db: number; x: number; y: number } | null>(null);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        // Drag Logic
+        if (isDragging) {
+            const rect = containerRef.current?.getBoundingClientRect();
+            if (rect) {
+                const y = e.clientY - rect.top;
+                let r = y / rect.height;
+                // Clamp
+                if (r < 0.1) r = 0.1;
+                if (r > 0.9) r = 0.9;
+                setSpectrumHeightRatio(r);
+            }
+            return;
+        }
+
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;
         const x = e.clientX - rect.left;
@@ -514,7 +536,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         const freqPerPixel = bandwidth / rect.width;
         const freq = freqStart + x * freqPerPixel;
 
-        const specHeight = rect.height * 0.34;
+        const specHeight = rect.height * spectrumHeightRatio;
         let db = -Infinity;
 
         if (y < specHeight) {
@@ -525,7 +547,12 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         setHoverInfo({ freq, db, x, y });
     };
 
-    const handleMouseLeave = () => setHoverInfo(null);
+    const handleMouseLeave = () => {
+        setHoverInfo(null);
+        if (isDragging) setIsDragging(false);
+    };
+
+    const handleMouseUp = () => setIsDragging(false);
 
     return (
         <div
@@ -533,15 +560,16 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             className={cn('relative w-full h-full bg-black overflow-hidden cursor-crosshair group', className)}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
         >
             <canvas
                 ref={canvasRef}
                 className="block w-full h-full"
             />
-            {/* Same overlays as before */}
+            {/* Split Tick Marks */}
             <div
                 className="absolute top-0 left-0 right-0 pointer-events-none overflow-hidden"
-                style={{ height: '34%' }}
+                style={{ height: `${spectrumHeightRatio * 100}%` }}
             >
                 {dbTicks.map(t => (
                     <div
@@ -562,9 +590,23 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 ))}
             </div>
 
+            {/* Draggable Divider */}
             <div
-                className="absolute left-0 right-0 h-6 bg-black flex items-center border-y border-white/20 pointer-events-none z-20"
-                style={{ top: '34%' }}
+                className="absolute left-0 right-0 h-4 flex items-center justify-center z-30 cursor-row-resize hover:bg-white/5 active:bg-white/10 transition-colors -translate-y-1/2"
+                style={{ top: `${spectrumHeightRatio * 100}%` }}
+                onMouseDown={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                }}
+            >
+                {/* Visual Line */}
+                <div className="w-full h-px bg-white/20 pointer-events-none" />
+            </div>
+
+            {/* Frequency Axis Configured to Divider */}
+            <div
+                className="absolute left-0 right-0 h-6 bg-black flex items-center border-t border-white/20 pointer-events-none z-20"
+                style={{ top: `${spectrumHeightRatio * 100}%`, transform: 'translateY(-100%)' }}
             >
                 {freqTicks.map(t => (
                     <div
@@ -586,7 +628,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
             <div
                 className="absolute left-0 right-0 pointer-events-none overflow-hidden"
-                style={{ top: '34%', bottom: 0 }}
+                style={{ top: `${spectrumHeightRatio * 100}%`, bottom: 0 }}
             >
                 {markers.map(m => (
                     <div
@@ -605,7 +647,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 ))}
             </div>
 
-            <div className="absolute top-2 right-2 text-xs text-white/70 font-mono pointer-events-none select-none bg-black/60 p-2 rounded text-right border border-white/10">
+            <div className="absolute top-2 right-2 text-xs text-white/70 font-mono pointer-events-none select-none bg-black/60 p-2 rounded text-right border border-white/10 z-40">
                 <div className="font-bold text-white">{(centerFrequency / 1e6).toFixed(3)} MHz</div>
                 <div className="text-white/50">Span: {(bandwidth / 1e6).toFixed(3)} MHz</div>
             </div>

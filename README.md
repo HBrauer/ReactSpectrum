@@ -1,73 +1,124 @@
-# React + TypeScript + Vite
+# Spectrum Waterfall
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Reusable Spectrum + Waterfall component with a local demo app.
 
-Currently, two official plugins are available:
+## Build (library)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This builds only the library output used by other repos.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Outputs:
+- `dist/index.es.js`
+- `dist/index.cjs.js`
+- `dist/types/index.d.ts`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Use in another repo (git dependency)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Add to `package.json` in the consumer repo:
+
+```json
+{
+  "dependencies": {
+    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.0"
+  }
+}
 ```
+
+Then:
+
+```bash
+npm install
+```
+
+Import:
+
+```ts
+import { SpectrumWaterfall } from 'spectrum-waterfall';
+```
+
+Minimal usage:
+
+```tsx
+import { useState } from 'react';
+import { SpectrumWaterfall, SpectrumData } from 'spectrum-waterfall';
+
+export default function MySpectrumView() {
+  const [frames, setFrames] = useState<SpectrumData[]>([]);
+
+  return (
+    <div style={{ width: '100%', height: '400px' }}>
+      <SpectrumWaterfall
+        data={frames}
+        refLevel={-20}
+        displayRange={100}
+        colorMap="turbo"
+        waterfallScaleMode="fixed"
+      />
+    </div>
+  );
+}
+```
+
+`data` is an array of frames with this shape:
+
+```ts
+type SpectrumData = {
+  frequency: number;      // center frequency (Hz)
+  bandwidth: number;      // span (Hz)
+  time: number;           // seconds (monotonic)
+  fftBins: Float32Array;  // dB values per bin
+};
+```
+
+Notes:
+- `data` can be an empty array; the component will render a blank view.
+- Use `waterfallScaleMode="auto"` for dynamic waterfall scaling, or `"fixed"` for a fixed min/max.
+
+## Demo app (this repo only)
+
+The demo app lives in `src/App.tsx`. Build it separately:
+
+```bash
+npm run build:demo
+```
+
+Run locally:
+
+```bash
+npm run dev
+```
+
+## Release workflow (git dependency)
+
+This repo is installed by other apps directly from git, so you should commit the build output and tag releases.
+
+1) Build the library:
+```bash
+npm run build
+```
+
+2) Commit the build output:
+```bash
+git add dist package.json README.md
+git commit -m "build: library output for v0.1.0"
+```
+
+3) Tag and push:
+```bash
+git tag v0.1.0
+git push --tags
+```
+
+4) In the consumer repo:
+```bash
+npm install
+```
+
+When you update:
+- Rebuild (`npm run build`)
+- Commit `dist/`
+- Tag a new version (e.g. `v0.1.1`)
+- Update the tag in the consumer repo and reinstall

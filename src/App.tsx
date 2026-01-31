@@ -7,6 +7,7 @@ function App() {
   const [bandwidth] = useState(2e6); // 2 MHz span
   const [colorMap, setColorMap] = useState('turbo');
   const [avg, setAvg] = useState(0.5);
+  const [waterfallScaleMode, setWaterfallScaleMode] = useState<'auto' | 'fixed'>('auto');
 
   const [refLevel, setRefLevel] = useState(-20);
   const [displayRange, setDisplayRange] = useState(100);
@@ -51,6 +52,17 @@ function App() {
           {avg.toFixed(2)}
         </div>
         <div className="flex gap-2 items-center text-sm">
+          <label>WF Scale:</label>
+          <select
+            value={waterfallScaleMode}
+            onChange={e => setWaterfallScaleMode(e.target.value as 'auto' | 'fixed')}
+            className="bg-neutral-800 border border-white/20 rounded p-1"
+          >
+            <option value="auto">Auto</option>
+            <option value="fixed">Fixed</option>
+          </select>
+        </div>
+        <div className="flex gap-2 items-center text-sm">
           <label>Freq:</label>
           <input
             type="number"
@@ -76,6 +88,7 @@ function App() {
             onDisplayRangeChange={setDisplayRange}
             averaging={avg}
             colorMap={colorMap}
+            waterfallScaleMode={waterfallScaleMode}
             className="border border-white/10"
           />
         )}

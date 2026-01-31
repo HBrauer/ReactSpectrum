@@ -19,6 +19,7 @@ export interface SpectrumWaterfallProps {
     averaging?: number;
     showPeakHold?: boolean;
     colorMap?: string;
+    waterfallScaleMode?: 'auto' | 'fixed';
     className?: string;
     targetRate?: number; // Target lines per second, default 50
     jitterBufferMs?: number; // Buffer depth in ms, default 200
@@ -33,6 +34,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     averaging = 0.5,
     showPeakHold = false,
     colorMap = 'turbo',
+    waterfallScaleMode = 'auto',
     className,
     targetRate = 50,
     jitterBufferMs = 200,
@@ -105,6 +107,10 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         waterfallMaxDb: 0,
         waterfallScaleReady: false,
         waterfallScaleAlpha: 0.05,
+        waterfallFixedMinDb: -120,
+        waterfallFixedMaxDb: 0,
+        waterfallFixedReady: false,
+        lastWaterfallScaleMode: 'auto' as 'auto' | 'fixed',
 
         // Time-Based Rendering State
         frameQueue: [] as SpectrumData[],
@@ -113,7 +119,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         accumulator: 0,
 
         // Props Cache
-        props: { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs },
+        props: { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode },
     });
 
     useEffect(() => {
@@ -132,7 +138,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
     // Update props in ref
     useEffect(() => {
-        stateRef.current.props = { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs };
+        stateRef.current.props = { refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode };
         const data = generateColorMap(colorMap as any);
         colormapDataRef.current = data;
         colormapVersionRef.current += 1;
@@ -141,7 +147,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.bindTexture(gl.TEXTURE_2D, stateRef.current.colormapTexture);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
         }
-    }, [refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs]);
+    }, [refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode]);
 
     // Data Ingestion: Push to Queue
     useEffect(() => {
@@ -284,8 +290,16 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             const h = Math.max(1, Math.floor(rect.height * dpr));
 
             const props = stateRef.current.props;
-            const minDb = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMinDb : (props.refLevel - props.displayRange);
-            const maxDb = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMaxDb : props.refLevel;
+            const useFixed = props.waterfallScaleMode === 'fixed';
+            const useAuto = !useFixed;
+            const autoMin = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMinDb : (props.refLevel - props.displayRange);
+            const autoMax = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMaxDb : props.refLevel;
+            const minDb = useFixed
+                ? (stateRef.current.waterfallFixedReady ? stateRef.current.waterfallFixedMinDb : autoMin)
+                : autoMin;
+            const maxDb = useFixed
+                ? (stateRef.current.waterfallFixedReady ? stateRef.current.waterfallFixedMaxDb : autoMax)
+                : autoMax;
             const cmapVersion = colormapVersionRef.current;
 
             const last = railStateRef.current;
@@ -335,6 +349,19 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         const render = (now: number) => {
             const state = stateRef.current;
             const { fftSize, frameQueue } = state;
+            const scaleMode = state.props.waterfallScaleMode;
+            if (state.lastWaterfallScaleMode !== scaleMode) {
+                if (scaleMode === 'fixed') {
+                    if (state.waterfallScaleReady) {
+                        state.waterfallFixedMinDb = state.waterfallMinDb;
+                        state.waterfallFixedMaxDb = state.waterfallMaxDb;
+                        state.waterfallFixedReady = true;
+                    } else {
+                        state.waterfallFixedReady = false;
+                    }
+                }
+                state.lastWaterfallScaleMode = scaleMode;
+            }
 
             // 1. Calculate Delta Time
             if (state.lastRafTime === 0) state.lastRafTime = now;
@@ -461,6 +488,11 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                         if (state.waterfallMaxDb - state.waterfallMinDb < 1) {
                             state.waterfallMaxDb = state.waterfallMinDb + 1;
                         }
+                        if (state.props.waterfallScaleMode === 'fixed' && !state.waterfallFixedReady) {
+                            state.waterfallFixedMinDb = state.waterfallMinDb;
+                            state.waterfallFixedMaxDb = state.waterfallMaxDb;
+                            state.waterfallFixedReady = true;
+                        }
                     }
 
                     // Upload to Waterfall
@@ -543,8 +575,13 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
             const offset = state.waterfallRow / state.waterfallHeight;
             gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_offset'), offset);
-            gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_minDb'), state.waterfallMinDb);
-            gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_maxDb'), state.waterfallMaxDb);
+            if (state.props.waterfallScaleMode === 'fixed' && state.waterfallFixedReady) {
+                gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_minDb'), state.waterfallFixedMinDb);
+                gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_maxDb'), state.waterfallFixedMaxDb);
+            } else {
+                gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_minDb'), state.waterfallMinDb);
+                gl.uniform1f(gl.getUniformLocation(pWaterfall, 'u_maxDb'), state.waterfallMaxDb);
+            }
             gl.drawArrays(gl.TRIANGLES, 0, 6);
 
             // Draw Spectrum

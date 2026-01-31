@@ -14,7 +14,7 @@ export interface SpectrumData {
 }
 
 export interface SpectrumWaterfallProps {
-    data: SpectrumData;
+    data: SpectrumData | SpectrumData[];
     refLevel?: number;
     displayRange?: number;
     averaging?: number;
@@ -36,7 +36,11 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     targetRate = 50,
     jitterBufferMs = 200,
 }) => {
-    const { frequency: centerFrequency, bandwidth } = data;
+    // Handle array or single item for metadata extraction
+    // We use the latest frame for "current" metadata (freq, span)
+    const latestData = Array.isArray(data) ? data[data.length - 1] : data;
+    const { frequency: centerFrequency, bandwidth } = latestData || { frequency: 100e6, bandwidth: 2e6 };
+
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rafRef = useRef<number | null>(null);
@@ -112,53 +116,53 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
     // Data Ingestion: Push to Queue
     useEffect(() => {
-        if (!data || !data.fftBins || data.fftBins.length === 0) return;
+        if (!data) return;
+
+        const inputs = Array.isArray(data) ? data : [data];
+        if (inputs.length === 0) return;
 
         const state = stateRef.current;
 
-        // Validate / Init FFT Size
-        if (data.fftBins.length !== state.fftSize) {
-            state.fftSize = data.fftBins.length;
-            state.averagedBins = new Float32Array(data.fftBins);
-            // Re-allocate textures if needed? Handled in render loop usually or explicitly here
-            // but for simplicity we'll handle resizing in render loop detector
-        }
+        inputs.forEach(d => {
+            if (!d.fftBins || d.fftBins.length === 0) return;
 
-        // Insert into sorted queue
-        // Usually data arrives in order, but verify
-        const queue = state.frameQueue;
-
-        // Simple optimization: if queue empty or new data is newer than last, push
-        if (queue.length === 0 || data.time > queue[queue.length - 1].time) {
-            queue.push(data);
-        } else {
-            // Insert sorted (rare case for simple UDP/WS streams but good for jitter)
-            let i = queue.length - 1;
-            while (i >= 0 && queue[i].time > data.time) {
-                i--;
+            // Validate / Init FFT Size
+            if (d.fftBins.length !== state.fftSize) {
+                state.fftSize = d.fftBins.length;
+                state.averagedBins = new Float32Array(d.fftBins);
             }
-            queue.splice(i + 1, 0, data);
-        }
 
-        // Initialize Render Time if not started
-        if (state.renderTime === 0) {
-            state.renderTime = data.time - (state.props.jitterBufferMs / 1000);
-            // Also reset averaged bins to this first frame
-            state.averagedBins.set(data.fftBins);
-        }
+            // Insert into sorted queue
+            const queue = state.frameQueue;
+            if (queue.length === 0 || d.time > queue[queue.length - 1].time) {
+                queue.push(d);
+            } else {
+                let i = queue.length - 1;
+                while (i >= 0 && queue[i].time > d.time) {
+                    i--;
+                }
+                queue.splice(i + 1, 0, d);
+            }
 
-        // Latency Cap: If queue is too far ahead of renderTime, drop old frames or jump renderTime
-        // Ideally we just keep queue length bounded
-        const maxQueueSize = Math.ceil(state.props.targetRate * 2); // 2 seconds buffer max
+            // Initialize Render Time if not started
+            if (state.renderTime === 0) {
+                state.renderTime = d.time - (state.props.jitterBufferMs / 1000);
+                state.averagedBins.set(d.fftBins);
+            }
+        });
+
+        const queue = state.frameQueue;
+        const maxQueueSize = Math.ceil(state.props.targetRate * 5);
+
         if (queue.length > maxQueueSize) {
-            // Drop oldest
-            queue.shift();
-            // If we are getting too far behind, bump renderTime
-            // renderTime should not be older than queue[0].time - jitterBuffer
-            // ... logic is complex, for now simple "keep buffer reasonable"
-            if (queue[0].time > state.renderTime + (state.props.jitterBufferMs / 1000) * 2) {
-                // We fell waaaay behind? Jump.
-                state.renderTime = queue[0].time - (state.props.jitterBufferMs / 1000);
+            const latestTime = queue[queue.length - 1].time;
+            const lag = latestTime - state.renderTime;
+
+            if (lag > 5.0) {
+                state.renderTime = latestTime - (state.props.jitterBufferMs / 1000);
+                while (queue.length > maxQueueSize) queue.shift();
+            } else {
+                while (queue.length > maxQueueSize) queue.shift();
             }
         }
 
@@ -255,9 +259,9 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             const stepTime = 1.0 / state.props.targetRate;
 
             // 3. Process Logic Steps (Fixed Time Step)
-            // Limit max steps to avoid spiral of death
+            // Limit max steps to avoid spiral of death, but allow large catch-up for background tabs (e.g. 100s)
             let steps = 0;
-            const maxSteps = 10;
+            const maxSteps = 5000;
 
             // Texture resize check needs to be outside loop potentially, or handled carefully
             if (fftSize > 0 && fftSize !== currentFftSize) {
@@ -268,7 +272,26 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, currentFftSize, 1, 0, gl.RED, gl.FLOAT, null);
             }
 
+            // Safety cap on accumulator to prevent memory exhaustion/spiral if data never returns
+            const MAX_ACCUMULATOR = 5.0; // 5 seconds
+            if (state.accumulator > MAX_ACCUMULATOR) state.accumulator = MAX_ACCUMULATOR;
+
             while (state.accumulator >= stepTime && steps < maxSteps && fftSize > 0) {
+                // Check if we are starved for data during a catch-up phase
+                // If we have a lot of time to simulate (accumulator high) but no data to cover it, 
+                // we should PAUSE consumption and wait for data to arrive.
+                // This prevents "fast forwarding" through empty space and drawing flat lines before the data arrives.
+                const isCatchingUp = state.accumulator > (state.props.jitterBufferMs / 1000) * 1.5;
+                const lastFrame = frameQueue.length > 0 ? frameQueue[frameQueue.length - 1] : null;
+                const hasFutureData = lastFrame && lastFrame.time > state.renderTime;
+
+                if (isCatchingUp && !hasFutureData) {
+                    // We are trying to catch up, but ran out of data. 
+                    // Break the loop to "Wait" for data to arrive in subsequent frames.
+                    // The accumulator remains high, so we resume catch-up later.
+                    break;
+                }
+
                 state.accumulator -= stepTime;
                 state.renderTime += stepTime;
                 steps++;
@@ -345,24 +368,31 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                     if (displayBins !== state.averagedBins) {
                         state.averagedBins.set(displayBins);
                     }
-
-                    // Apply EMA smoothing for the Spectrum Line view specifically? 
-                    // The original code applied EMA to the waterfall bins effectively if they came in fast.
-                    // Here, displayBins IS the signal at this time.
-                    // We can keep `averagedBins` as the "interpolated instant" value.
                 }
 
                 // Markers Check
-                const currentTime = state.renderTime * 1000;
-                if (currentTime - lastMarkerTime.current > 2000) { // Every 2s
-                    const date = new Date(currentTime);
-                    const timeStr = date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    const newMarker = { id: currentTime, label: timeStr, rowIndex: state.waterfallRow };
+                const currentTimeMs = state.renderTime * 1000;
 
-                    const newMarkers = [...markersRef.current, newMarker].slice(-20);
-                    markersRef.current = newMarkers;
-                    setMarkers(newMarkers);
-                    lastMarkerTime.current = currentTime;
+                // Calculate max duration based on height and rate
+                const durationSec = state.waterfallHeight / state.props.targetRate;
+                const durationMs = durationSec * 1000;
+
+                if (currentTimeMs - lastMarkerTime.current > 2000) { // Every 2s
+                    const date = new Date(currentTimeMs);
+                    const timeStr = date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    const newMarker = { id: currentTimeMs, label: timeStr, rowIndex: state.waterfallRow };
+
+                    // Add new marker
+                    const nextMarkers = [...markersRef.current, newMarker];
+
+                    // Filter markers that have scrolled off the ends
+                    const validMarkers = nextMarkers.filter(m => {
+                        return (currentTimeMs - m.id) < durationMs;
+                    });
+
+                    markersRef.current = validMarkers;
+                    setMarkers(validMarkers);
+                    lastMarkerTime.current = currentTimeMs;
                 }
             }
 
@@ -596,4 +626,3 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         </div>
     );
 };
-

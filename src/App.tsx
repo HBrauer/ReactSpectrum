@@ -13,49 +13,19 @@ function App() {
   const [avg, setAvg] = useState(0.5);
 
   useEffect(() => {
-    const size = 2048;
-    const buffer = new Float32Array(size);
-    let time = 0;
-    let seq = 0;
+    // Spawn worker
+    const worker = new Worker(new URL('./spectrum.worker.ts', import.meta.url), { type: 'module' });
 
-    const interval = setInterval(() => {
-      // Advance simulated signal time
-      time += 0.05;
-      seq++;
+    worker.onmessage = (e) => {
+      setFftData(e.data);
+    };
 
-      // Use current wall clock for the packet timestamp
-      const now = Date.now() / 1000;
+    worker.postMessage('start');
 
-      // Generate noise + signals
-      for (let i = 0; i < size; i++) {
-        // Noise floor around -100 dB
-        let noise = -100 + (Math.random() * 10);
-
-        // Signal 1: Sine wave drifting
-        const freq1 = 0.2 + Math.sin(time * 0.1) * 0.3; // -0.1 to 0.5 normalized freq
-        const dist1 = Math.abs((i / size * 2 - 1) - freq1);
-        if (dist1 < 0.05) {
-          noise += 50 * Math.exp(-dist1 * 100);
-        }
-
-        // Signal 2: Pulsing
-        const freq2 = -0.5;
-        const dist2 = Math.abs((i / size * 2 - 1) - freq2);
-        if (dist2 < 0.02) {
-          noise += (Math.sin(time * 5) * 20 + 40) * Math.exp(-dist2 * 200);
-        }
-
-        buffer[i] = noise;
-      }
-
-      setFftData({
-        bins: new Float32Array(buffer),
-        time: now,
-        seq: seq
-      });
-    }, 20); // Send at 50Hz (20ms) to test jitter buffer
-
-    return () => clearInterval(interval);
+    return () => {
+      worker.postMessage('stop');
+      worker.terminate();
+    };
   }, []);
 
   return (
@@ -93,20 +63,28 @@ function App() {
       </div>
 
       <div className="flex-1 w-full relative">
-        <SpectrumWaterfall
-          data={{
-            fftBins: fftData.bins,
-            frequency: centerFreq,
-            bandwidth: bandwidth,
-            time: fftData.time,
-            seq: fftData.seq,
-          }}
-          refLevel={-20}
-          displayRange={100}
-          averaging={avg}
-          colorMap={colorMap}
-          className="border border-white/10"
-        />
+        {fftData && (
+          <SpectrumWaterfall
+            data={Array.isArray(fftData) ? fftData.map(d => ({
+              fftBins: d.bins,
+              frequency: centerFreq,
+              bandwidth: bandwidth,
+              time: d.time,
+              seq: d.seq
+            })) : {
+              fftBins: fftData.bins,
+              frequency: centerFreq,
+              bandwidth: bandwidth,
+              time: fftData.time,
+              seq: fftData.seq,
+            }}
+            refLevel={-20}
+            displayRange={100}
+            averaging={avg}
+            colorMap={colorMap}
+            className="border border-white/10"
+          />
+        )}
       </div>
     </div>
   );

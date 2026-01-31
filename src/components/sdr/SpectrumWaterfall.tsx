@@ -623,7 +623,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                         />
                     </div>
                 ))}
-                <div className="absolute top-0 left-1/2 w-0.5 h-[5px] bg-red-500"></div>
+                <div className="absolute top-0 left-1/2 w-0.5 h-[5px] bg-red-500 -translate-x-1/2"></div>
             </div>
 
             <div

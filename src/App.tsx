@@ -29,7 +29,7 @@ function App() {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-neutral-900 text-white flex flex-col">
+    <div className="fixed inset-0 overflow-hidden bg-neutral-900 text-white flex flex-col">
       <div className="p-4 border-b border-white/10 flex gap-4 items-center">
         <h1 className="font-bold text-lg">React Spectrum</h1>
         <div className="flex gap-2 items-center text-sm">

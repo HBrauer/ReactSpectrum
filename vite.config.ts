@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
             entry: path.resolve(__dirname, './src/lib/index.ts'),
             name: 'SpectrumWaterfall',
             formats: ['es', 'cjs'],
+            cssFileName: 'style',
             fileName: (format) => `index.${format}.js`,
           },
           rollupOptions: {

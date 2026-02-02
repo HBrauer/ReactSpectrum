@@ -9,7 +9,7 @@ Reusable Spectrum + Waterfall React component with a local demo app.
 ```json
 {
   "dependencies": {
-    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.2"
+    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.3"
   }
 }
 ```
@@ -118,12 +118,12 @@ npm run build
 2) Commit the build output:
 ```bash
 git add dist package.json README.md
-git commit -m "build: library output for v0.1.2"
+git commit -m "build: library output for v0.1.3"
 ```
 
 3) Tag and push:
 ```bash
-git tag v0.1.2
+git tag v0.1.3
 git push --tags
 ```
 

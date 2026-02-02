@@ -1,45 +1,26 @@
 # Spectrum Waterfall
 
-Reusable Spectrum + Waterfall component with a local demo app.
+Reusable Spectrum + Waterfall React component with a local demo app.
 
-## Build (library)
+## Quick start (consumer repo)
 
-This builds only the library output used by other repos.
-
-```bash
-npm run build
-```
-
-Outputs:
-- `dist/index.es.js`
-- `dist/index.cjs.js`
-- `dist/types/index.d.ts`
-
-## Use in another repo (git dependency)
-
-Add to `package.json` in the consumer repo:
+1) Add dependency:
 
 ```json
 {
   "dependencies": {
-    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.0"
+    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.2"
   }
 }
 ```
 
-Then:
+2) Install:
 
 ```bash
 npm install
 ```
 
-Import:
-
-```ts
-import { SpectrumWaterfall } from 'spectrum-waterfall';
-```
-
-Minimal usage:
+3) Import and use:
 
 ```tsx
 import { useState } from 'react';
@@ -62,6 +43,23 @@ export default function MySpectrumView() {
 }
 ```
 
+Requirements:
+- React 19.x and ReactDOM 19.x
+- WebGL2 support in the browser
+
+## Styles
+
+The library ships compiled CSS in `dist/style.css` and the JS entry imports it. Consumers do not need Tailwind.
+
+- If your bundler supports CSS imports from dependencies (Vite, webpack, etc.), no extra step is needed.
+- If you do not see styles, add this once in your app entry:
+
+```ts
+import 'spectrum-waterfall/style.css';
+```
+
+## Data format
+
 `data` is an array of frames with this shape:
 
 ```ts
@@ -75,11 +73,28 @@ type SpectrumData = {
 
 Notes:
 - `data` can be an empty array; the component will render a blank view.
-- Use `waterfallScaleMode="auto"` for dynamic waterfall scaling, or `"fixed"` for a fixed min/max.
+- Use `waterfallScaleMode="auto"` for dynamic scaling, or `"fixed"` for a fixed min/max.
+- WebGL2 is required.
+
+## Build (library)
+
+This builds only the library output used by other repos.
+
+```bash
+npm run build
+```
+
+Outputs:
+- `dist/index.es.js`
+- `dist/index.cjs.js`
+- `dist/types/index.d.ts`
+- `dist/style.css`
 
 ## Demo app (this repo only)
 
-The demo app lives in `src/App.tsx`. Build it separately:
+The demo app lives in `src/App.tsx`.
+
+Build demo:
 
 ```bash
 npm run build:demo
@@ -103,12 +118,12 @@ npm run build
 2) Commit the build output:
 ```bash
 git add dist package.json README.md
-git commit -m "build: library output for v0.1.0"
+git commit -m "build: library output for v0.1.2"
 ```
 
 3) Tag and push:
 ```bash
-git tag v0.1.0
+git tag v0.1.2
 git push --tags
 ```
 

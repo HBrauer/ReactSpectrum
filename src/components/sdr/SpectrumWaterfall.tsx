@@ -199,6 +199,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         if (running && !prevRunningRef.current) {
             const state = stateRef.current;
             const gl = state.gl;
+            const previousFftSize = state.fftSize;
 
             state.frameQueue = [];
             state.renderTime = 0;
@@ -215,13 +216,14 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             lastMarkerTime.current = 0;
 
             if (gl) {
+                const clearWidth = previousFftSize > 0 ? previousFftSize : 1;
                 if (state.waterfallTexture) {
                     gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, 1, state.waterfallHeight, 0, gl.RED, gl.FLOAT, null);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, clearWidth, state.waterfallHeight, 0, gl.RED, gl.FLOAT, null);
                 }
                 if (state.spectrumDataTexture) {
                     gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, 1, 1, 0, gl.RED, gl.FLOAT, null);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, clearWidth, 1, 0, gl.RED, gl.FLOAT, null);
                 }
             }
         }

@@ -9,7 +9,7 @@ Reusable Spectrum + Waterfall React component with a local demo app.
 ```json
 {
   "dependencies": {
-    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.6"
+    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.7"
   }
 }
 ```

@@ -3239,7 +3239,7 @@ const so = ({
   Le(() => {
     p.current = j;
   }, [j]);
-  const Ue = oo(Z, le, B.width), Ee = B.height * j, a = no(o, r, Ee), [x, w] = Ne([]), y = J([]), $ = J(/* @__PURE__ */ new Map()), be = J(0), [v, ae] = Ne(!1), [ee, ge] = Ne(null), te = typeof d == "number" && typeof g == "number", Oe = te ? d : K.min, Kt = te ? g : K.max, R = J({
+  const Ue = oo(Z, le, B.width), Ee = B.height * j, a = no(o, r, Ee), [x, w] = Ne([]), y = J([]), $ = J(/* @__PURE__ */ new Map()), be = J(0), [v, ae] = Ne(!1), [ee, ge] = Ne(null), te = typeof d == "number" && typeof g == "number", Oe = te ? d : K.min, Kt = te ? g : K.max, k = J({
     // WebGL Resources
     gl: null,
     spectrumVao: null,
@@ -3297,7 +3297,7 @@ const so = ({
     });
     return i.observe(V.current), () => i.disconnect();
   }, []), Le(() => {
-    R.current.props = {
+    k.current.props = {
       running: n,
       refLevel: o,
       displayRange: r,
@@ -3309,40 +3309,43 @@ const so = ({
       waterfallScaleMode: b,
       waterfallFixedMinDb: d,
       waterfallFixedMaxDb: g
-    }, typeof d == "number" && typeof g == "number" && (R.current.waterfallFixedMinDb = d, R.current.waterfallFixedMaxDb = g, R.current.waterfallFixedReady = !0, ke({ min: d, max: g }));
+    }, typeof d == "number" && typeof g == "number" && (k.current.waterfallFixedMinDb = d, k.current.waterfallFixedMaxDb = g, k.current.waterfallFixedReady = !0, ke({ min: d, max: g }));
     const i = bt(u);
     pe.current = i, h.current += 1;
-    const e = R.current.gl;
-    e && R.current.colormapTexture && (e.bindTexture(e.TEXTURE_2D, R.current.colormapTexture), e.texSubImage2D(e.TEXTURE_2D, 0, 0, 0, 256, 1, e.RGBA, e.UNSIGNED_BYTE, i));
+    const e = k.current.gl;
+    e && k.current.colormapTexture && (e.bindTexture(e.TEXTURE_2D, k.current.colormapTexture), e.texSubImage2D(e.TEXTURE_2D, 0, 0, 0, 256, 1, e.RGBA, e.UNSIGNED_BYTE, i));
   }, [n, o, r, u, l, c, D, A, b, d, g]), Le(() => {
     if (n && !xt.current) {
-      const i = R.current, e = i.gl;
-      i.frameQueue = [], i.renderTime = 0, i.lastRafTime = 0, i.accumulator = 0, i.fftSize = 0, i.averagedBins = new Float32Array(0), i.waterfallRow = 0, i.waterfallScaleReady = !1, y.current = [], $.current.clear(), w([]), be.current = 0, e && (i.waterfallTexture && (e.bindTexture(e.TEXTURE_2D, i.waterfallTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, 1, i.waterfallHeight, 0, e.RED, e.FLOAT, null)), i.spectrumDataTexture && (e.bindTexture(e.TEXTURE_2D, i.spectrumDataTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, 1, 1, 0, e.RED, e.FLOAT, null)));
+      const i = k.current, e = i.gl, P = i.fftSize;
+      if (i.frameQueue = [], i.renderTime = 0, i.lastRafTime = 0, i.accumulator = 0, i.fftSize = 0, i.averagedBins = new Float32Array(0), i.waterfallRow = 0, i.waterfallScaleReady = !1, y.current = [], $.current.clear(), w([]), be.current = 0, e) {
+        const R = P > 0 ? P : 1;
+        i.waterfallTexture && (e.bindTexture(e.TEXTURE_2D, i.waterfallTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, R, i.waterfallHeight, 0, e.RED, e.FLOAT, null)), i.spectrumDataTexture && (e.bindTexture(e.TEXTURE_2D, i.spectrumDataTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, R, 1, 0, e.RED, e.FLOAT, null));
+      }
     }
     xt.current = n;
   }, [n]), Le(() => {
     if (!t || t.length === 0) return;
-    const i = R.current;
+    const i = k.current;
     if (!i.props.running) return;
-    t.forEach((k) => {
-      if (!k.fftBins || k.fftBins.length === 0) return;
-      k.fftBins.length !== i.fftSize && (i.fftSize = k.fftBins.length, i.averagedBins = new Float32Array(k.fftBins));
+    t.forEach((R) => {
+      if (!R.fftBins || R.fftBins.length === 0) return;
+      R.fftBins.length !== i.fftSize && (i.fftSize = R.fftBins.length, i.averagedBins = new Float32Array(R.fftBins));
       const E = i.frameQueue;
-      if (E.length === 0 || k.time > E[E.length - 1].time)
-        E.push(k);
+      if (E.length === 0 || R.time > E[E.length - 1].time)
+        E.push(R);
       else {
         let L = E.length - 1;
-        for (; L >= 0 && E[L].time > k.time; )
+        for (; L >= 0 && E[L].time > R.time; )
           L--;
-        E.splice(L + 1, 0, k);
+        E.splice(L + 1, 0, R);
       }
-      i.renderTime === 0 && (i.renderTime = k.time - i.props.jitterBufferMs / 1e3, i.averagedBins.set(k.fftBins));
+      i.renderTime === 0 && (i.renderTime = R.time - i.props.jitterBufferMs / 1e3, i.averagedBins.set(R.fftBins));
     });
     const e = i.frameQueue, P = Math.ceil(i.props.targetRate * 5);
     if (e.length > P) {
-      const k = e[e.length - 1].time;
-      if (k - i.renderTime > 5)
-        for (i.renderTime = k - i.props.jitterBufferMs / 1e3; e.length > P; ) e.shift();
+      const R = e[e.length - 1].time;
+      if (R - i.renderTime > 5)
+        for (i.renderTime = R - i.props.jitterBufferMs / 1e3; e.length > P; ) e.shift();
       else
         for (; e.length > P; ) e.shift();
     }
@@ -3354,12 +3357,12 @@ const so = ({
       console.error("WebGL 2 not supported");
       return;
     }
-    R.current.gl = e;
-    const P = pt(e, Kr, eo), k = pt(e, Jr, Qr), E = pt(e, to, ro);
-    if (!P || !k || !E) return;
-    R.current.programSpectrumLine = P, R.current.programSpectrumFill = k, R.current.programWaterfall = E;
+    k.current.gl = e;
+    const P = pt(e, Kr, eo), R = pt(e, Jr, Qr), E = pt(e, to, ro);
+    if (!P || !R || !E) return;
+    k.current.programSpectrumLine = P, k.current.programSpectrumFill = R, k.current.programWaterfall = E;
     const L = e.createVertexArray();
-    R.current.spectrumVao = L;
+    k.current.spectrumVao = L;
     const _e = e.createVertexArray();
     e.bindVertexArray(_e);
     const ue = new Float32Array([-1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, -1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, 1]), de = e.createBuffer();
@@ -3367,18 +3370,18 @@ const so = ({
     const se = e.getAttribLocation(E, "a_position"), he = e.getAttribLocation(E, "a_texCoord");
     e.enableVertexAttribArray(se), e.vertexAttribPointer(se, 2, e.FLOAT, !1, 16, 0), e.enableVertexAttribArray(he), e.vertexAttribPointer(he, 2, e.FLOAT, !1, 16, 8);
     const yt = e.getExtension("OES_texture_float_linear") ? e.LINEAR : e.NEAREST, Rt = e.createTexture();
-    e.bindTexture(e.TEXTURE_2D, Rt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.REPEAT), R.current.waterfallTexture = Rt;
+    e.bindTexture(e.TEXTURE_2D, Rt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.REPEAT), k.current.waterfallTexture = Rt;
     const kt = e.createTexture();
-    e.bindTexture(e.TEXTURE_2D, kt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), R.current.spectrumDataTexture = kt;
+    e.bindTexture(e.TEXTURE_2D, kt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), k.current.spectrumDataTexture = kt;
     const Et = e.createTexture();
-    e.bindTexture(e.TEXTURE_2D, Et), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), e.texImage2D(e.TEXTURE_2D, 0, e.RGBA, 256, 1, 0, e.RGBA, e.UNSIGNED_BYTE, bt(R.current.props.colorMap)), R.current.colormapTexture = Et;
+    e.bindTexture(e.TEXTURE_2D, Et), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), e.texImage2D(e.TEXTURE_2D, 0, e.RGBA, 256, 1, 0, e.RGBA, e.UNSIGNED_BYTE, bt(k.current.props.colorMap)), k.current.colormapTexture = Et;
     let xe = 0;
     const _t = () => {
       const fe = oe.current;
       if (!fe) return;
       const s = fe.getContext("2d");
       if (!s) return;
-      const Se = fe.getBoundingClientRect(), O = window.devicePixelRatio || 1, me = Math.max(1, Math.floor(Se.width * O)), we = Math.max(1, Math.floor(Se.height * O)), q = R.current.props, We = q.waterfallScaleMode === "fixed", Ke = R.current.waterfallScaleReady ? R.current.waterfallMinDb : q.refLevel - q.displayRange, et = R.current.waterfallScaleReady ? R.current.waterfallMaxDb : q.refLevel, $e = R.current.waterfallFixedMinDb, ct = R.current.waterfallFixedMaxDb, De = We && R.current.waterfallFixedReady ? $e : Ke, qe = We && R.current.waterfallFixedReady ? ct : et, tt = h.current, H = z.current;
+      const Se = fe.getBoundingClientRect(), O = window.devicePixelRatio || 1, me = Math.max(1, Math.floor(Se.width * O)), we = Math.max(1, Math.floor(Se.height * O)), q = k.current.props, We = q.waterfallScaleMode === "fixed", Ke = k.current.waterfallScaleReady ? k.current.waterfallMinDb : q.refLevel - q.displayRange, et = k.current.waterfallScaleReady ? k.current.waterfallMaxDb : q.refLevel, $e = k.current.waterfallFixedMinDb, ct = k.current.waterfallFixedMaxDb, De = We && k.current.waterfallFixedReady ? $e : Ke, qe = We && k.current.waterfallFixedReady ? ct : et, tt = h.current, H = z.current;
       if (H.w === me && H.h === we && H.refLevel === q.refLevel && H.displayRange === q.displayRange && H.minDb === De && H.maxDb === qe && H.cmapVersion === tt)
         return;
       z.current = { w: me, h: we, refLevel: q.refLevel, displayRange: q.displayRange, minDb: De, maxDb: qe, cmapVersion: tt }, fe.width !== me && (fe.width = me), fe.height !== we && (fe.height = we);
@@ -3392,7 +3395,7 @@ const so = ({
       }
       s.putImageData(ve, 0, 0);
     }, lt = (fe) => {
-      const s = R.current, { fftSize: Se, frameQueue: O } = s, me = s.props.waterfallScaleMode;
+      const s = k.current, { fftSize: Se, frameQueue: O } = s, me = s.props.waterfallScaleMode;
       s.lastWaterfallScaleMode !== me && (me === "fixed" && (s.waterfallScaleReady ? (s.waterfallFixedMinDb = s.waterfallMinDb, s.waterfallFixedMaxDb = s.waterfallMaxDb, s.waterfallFixedReady = !0, te || ke({ min: s.waterfallFixedMinDb, max: s.waterfallFixedMaxDb })) : s.waterfallFixedReady = !1), s.lastWaterfallScaleMode = me), s.lastRafTime === 0 && (s.lastRafTime = fe);
       const we = (fe - s.lastRafTime) / 1e3;
       s.lastRafTime = fe;
@@ -3458,7 +3461,7 @@ const so = ({
       const et = p.current, $e = Math.floor(i.height * (1 - et));
       e.viewport(0, 0, i.width, $e), e.useProgram(s.programWaterfall), e.bindVertexArray(_e), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, s.waterfallTexture), e.uniform1i(e.getUniformLocation(E, "u_waterfall"), 0), e.activeTexture(e.TEXTURE1), e.bindTexture(e.TEXTURE_2D, s.colormapTexture), e.uniform1i(e.getUniformLocation(E, "u_colormap"), 1);
       const ct = s.waterfallRow / s.waterfallHeight;
-      e.uniform1f(e.getUniformLocation(E, "u_offset"), ct), s.props.waterfallScaleMode === "fixed" && s.waterfallFixedReady ? (e.uniform1f(e.getUniformLocation(E, "u_minDb"), s.waterfallFixedMinDb), e.uniform1f(e.getUniformLocation(E, "u_maxDb"), s.waterfallFixedMaxDb)) : (e.uniform1f(e.getUniformLocation(E, "u_minDb"), s.waterfallMinDb), e.uniform1f(e.getUniformLocation(E, "u_maxDb"), s.waterfallMaxDb)), e.drawArrays(e.TRIANGLES, 0, 6), e.viewport(0, $e, i.width, i.height - $e), e.enable(e.BLEND), e.blendFunc(e.SRC_ALPHA, e.ONE_MINUS_SRC_ALPHA), e.useProgram(s.programSpectrumFill), e.bindVertexArray(s.spectrumVao), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, s.spectrumDataTexture), e.uniform1i(e.getUniformLocation(k, "u_data"), 0), e.uniform1f(e.getUniformLocation(k, "u_bins"), xe), e.uniform1f(e.getUniformLocation(k, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(k, "u_maxDb"), s.props.refLevel), e.drawArrays(e.TRIANGLE_STRIP, 0, xe * 2), e.useProgram(s.programSpectrumLine), e.bindVertexArray(s.spectrumVao), e.uniform1i(e.getUniformLocation(P, "u_data"), 0), e.uniform1f(e.getUniformLocation(P, "u_bins"), xe), e.uniform1f(e.getUniformLocation(P, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(P, "u_maxDb"), s.props.refLevel), e.drawArrays(e.LINE_STRIP, 0, xe), e.disable(e.BLEND), _t();
+      e.uniform1f(e.getUniformLocation(E, "u_offset"), ct), s.props.waterfallScaleMode === "fixed" && s.waterfallFixedReady ? (e.uniform1f(e.getUniformLocation(E, "u_minDb"), s.waterfallFixedMinDb), e.uniform1f(e.getUniformLocation(E, "u_maxDb"), s.waterfallFixedMaxDb)) : (e.uniform1f(e.getUniformLocation(E, "u_minDb"), s.waterfallMinDb), e.uniform1f(e.getUniformLocation(E, "u_maxDb"), s.waterfallMaxDb)), e.drawArrays(e.TRIANGLES, 0, 6), e.viewport(0, $e, i.width, i.height - $e), e.enable(e.BLEND), e.blendFunc(e.SRC_ALPHA, e.ONE_MINUS_SRC_ALPHA), e.useProgram(s.programSpectrumFill), e.bindVertexArray(s.spectrumVao), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, s.spectrumDataTexture), e.uniform1i(e.getUniformLocation(R, "u_data"), 0), e.uniform1f(e.getUniformLocation(R, "u_bins"), xe), e.uniform1f(e.getUniformLocation(R, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(R, "u_maxDb"), s.props.refLevel), e.drawArrays(e.TRIANGLE_STRIP, 0, xe * 2), e.useProgram(s.programSpectrumLine), e.bindVertexArray(s.spectrumVao), e.uniform1i(e.getUniformLocation(P, "u_data"), 0), e.uniform1f(e.getUniformLocation(P, "u_bins"), xe), e.uniform1f(e.getUniformLocation(P, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(P, "u_maxDb"), s.props.refLevel), e.drawArrays(e.LINE_STRIP, 0, xe), e.disable(e.BLEND), _t();
       const De = s.waterfallHeight, qe = De / s.props.targetRate, tt = s.renderTime * 1e3;
       y.current.forEach((H) => {
         const ve = $.current.get(H.id);
@@ -3473,7 +3476,7 @@ const so = ({
       }), Y.current = requestAnimationFrame(lt);
     };
     return Y.current = requestAnimationFrame(lt), () => {
-      Y.current && cancelAnimationFrame(Y.current), e.deleteProgram(P), e.deleteProgram(k), e.deleteProgram(E), e.deleteTexture(R.current.waterfallTexture), e.deleteTexture(R.current.colormapTexture), e.deleteTexture(R.current.spectrumDataTexture);
+      Y.current && cancelAnimationFrame(Y.current), e.deleteProgram(P), e.deleteProgram(R), e.deleteProgram(E), e.deleteTexture(k.current.waterfallTexture), e.deleteTexture(k.current.colormapTexture), e.deleteTexture(k.current.spectrumDataTexture);
     };
   }, []);
   const [Be, wt] = zt.useState(null), [vt, st] = Ne(!1), it = J(0), er = (i) => {
@@ -3494,13 +3497,13 @@ const so = ({
     }
     const e = V.current?.getBoundingClientRect();
     if (!e) return;
-    const P = i.clientX - e.left, k = i.clientY - e.top, E = Z - le / 2, L = le / e.width, _e = E + P * L, ue = e.height * j;
+    const P = i.clientX - e.left, R = i.clientY - e.top, E = Z - le / 2, L = le / e.width, _e = E + P * L, ue = e.height * j;
     let de = -1 / 0;
-    if (k < ue) {
+    if (R < ue) {
       const he = r / ue;
-      de = o - k * he;
+      de = o - R * he;
     }
-    wt({ freq: _e, db: de, x: P, y: k });
+    wt({ freq: _e, db: de, x: P, y: R });
   }, tr = () => {
     wt(null), X && W(!1), vt && st(!1);
   }, rr = () => {
@@ -3511,15 +3514,15 @@ const so = ({
     return Math.max(0, Math.min(100, e));
   };
   return Le(() => {
-    te || (R.current.waterfallFixedMinDb = K.min, R.current.waterfallFixedMaxDb = K.max, R.current.waterfallFixedReady = !0);
+    te || (k.current.waterfallFixedMinDb = K.min, k.current.waterfallFixedMaxDb = K.max, k.current.waterfallFixedReady = !0);
   }, [te, K]), Le(() => {
     if (!ee) return;
     const i = (P) => {
-      const k = V.current?.getBoundingClientRect();
-      if (!k) return;
-      const E = k.height * j;
+      const R = V.current?.getBoundingClientRect();
+      if (!R) return;
+      const E = R.height * j;
       if (E <= 0 || r === 0) return;
-      const L = Math.min(Math.max(P.clientY - k.top, 0), E), _e = o - L / E * r;
+      const L = Math.min(Math.max(P.clientY - R.top, 0), E), _e = o - L / E * r;
       let ue = te ? d : K.min, de = te ? g : K.max;
       ee === "min" ? ue = Math.min(_e, de - 1) : de = Math.max(_e, ue + 1);
       const se = o - r, he = o;
@@ -3572,10 +3575,10 @@ const so = ({
                   onWheel: (i) => {
                     if (!Q || !C) return;
                     i.preventDefault(), i.stopPropagation();
-                    const e = i.currentTarget.getBoundingClientRect(), k = (i.clientY - e.top) / e.height, E = 1.1;
+                    const e = i.currentTarget.getBoundingClientRect(), R = (i.clientY - e.top) / e.height, E = 1.1;
                     let L = r;
                     i.deltaY < 0 ? L = r / E : L = r * E, L < 10 && (L = 10), L > 200 && (L = 200);
-                    const _e = o + k * (L - r);
+                    const _e = o + R * (L - r);
                     Q(L), C(_e);
                   }
                 }

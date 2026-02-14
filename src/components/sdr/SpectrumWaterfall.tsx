@@ -14,6 +14,7 @@ export interface SpectrumData {
 
 export interface SpectrumWaterfallProps {
     data: SpectrumData[]; // Strict array input
+    running?: boolean; // When false, freeze the current waterfall/spectrum state
     refLevel?: number;
     displayRange?: number;
     averaging?: number;
@@ -32,6 +33,7 @@ export interface SpectrumWaterfallProps {
 
 export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     data,
+    running = true,
     refLevel = 0,
     displayRange = 80,
     averaging = 0.5,
@@ -132,6 +134,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
         // Props Cache
         props: {
+            running,
             refLevel,
             displayRange,
             colorMap,
@@ -144,6 +147,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             waterfallFixedMaxDb
         },
     });
+    const prevRunningRef = useRef(running);
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -162,6 +166,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     // Update props in ref
     useEffect(() => {
         stateRef.current.props = {
+            running,
             refLevel,
             displayRange,
             colorMap,
@@ -187,13 +192,49 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.bindTexture(gl.TEXTURE_2D, stateRef.current.colormapTexture);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
         }
-    }, [refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode, waterfallFixedMinDb, waterfallFixedMaxDb]);
+    }, [running, refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode, waterfallFixedMinDb, waterfallFixedMaxDb]);
+
+    // Restart transition: clear old waterfall/spectrum history only when moving from stopped -> running.
+    useEffect(() => {
+        if (running && !prevRunningRef.current) {
+            const state = stateRef.current;
+            const gl = state.gl;
+
+            state.frameQueue = [];
+            state.renderTime = 0;
+            state.lastRafTime = 0;
+            state.accumulator = 0;
+            state.fftSize = 0;
+            state.averagedBins = new Float32Array(0);
+            state.waterfallRow = 0;
+            state.waterfallScaleReady = false;
+
+            markersRef.current = [];
+            markerDomRefs.current.clear();
+            setMarkers([]);
+            lastMarkerTime.current = 0;
+
+            if (gl) {
+                if (state.waterfallTexture) {
+                    gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, 1, state.waterfallHeight, 0, gl.RED, gl.FLOAT, null);
+                }
+                if (state.spectrumDataTexture) {
+                    gl.bindTexture(gl.TEXTURE_2D, state.spectrumDataTexture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, 1, 1, 0, gl.RED, gl.FLOAT, null);
+                }
+            }
+        }
+
+        prevRunningRef.current = running;
+    }, [running]);
 
     // Data Ingestion: Push to Queue
     useEffect(() => {
         if (!data || data.length === 0) return;
 
         const state = stateRef.current;
+        if (!state.props.running) return;
 
         // Data is already an array, just iterate
         data.forEach(d => {
@@ -331,7 +372,6 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
 
             const props = stateRef.current.props;
             const useFixed = props.waterfallScaleMode === 'fixed';
-            const useAuto = !useFixed;
             const autoMin = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMinDb : (props.refLevel - props.displayRange);
             const autoMax = stateRef.current.waterfallScaleReady ? stateRef.current.waterfallMaxDb : props.refLevel;
             const fixedMin = stateRef.current.waterfallFixedMinDb;
@@ -413,12 +453,9 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             const dt = (now - state.lastRafTime) / 1000; // seconds
             state.lastRafTime = now;
 
-            // 2. Add to Accumulator
-            state.accumulator += dt;
             const stepTime = 1.0 / state.props.targetRate;
 
-            // 3. Process Logic Steps (Fixed Time Step)
-            // Limit max steps to avoid spiral of death, but allow large catch-up for background tabs (e.g. 100s)
+            // 2-3. Process time only while running; when stopped we keep the last rendered state as-is.
             let steps = 0;
             const maxSteps = 5000;
 
@@ -431,158 +468,162 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, currentFftSize, 1, 0, gl.RED, gl.FLOAT, null);
             }
 
-            // Safety cap on accumulator to prevent memory exhaustion/spiral if data never returns
-            const MAX_ACCUMULATOR = 5.0; // 5 seconds
-            if (state.accumulator > MAX_ACCUMULATOR) state.accumulator = MAX_ACCUMULATOR;
+            if (state.props.running) {
+                state.accumulator += dt;
 
-            while (state.accumulator >= stepTime && steps < maxSteps && fftSize > 0) {
-                // Check if we are starved for data during a catch-up phase
-                // If we have a lot of time to simulate (accumulator high) but no data to cover it, 
-                // we should PAUSE consumption and wait for data to arrive.
-                // This prevents "fast forwarding" through empty space and drawing flat lines before the data arrives.
-                const isCatchingUp = state.accumulator > (state.props.jitterBufferMs / 1000) * 1.5;
-                const lastFrame = frameQueue.length > 0 ? frameQueue[frameQueue.length - 1] : null;
-                const hasFutureData = lastFrame && lastFrame.time > state.renderTime;
+                // Safety cap on accumulator to prevent memory exhaustion/spiral if data never returns
+                const MAX_ACCUMULATOR = 5.0; // 5 seconds
+                if (state.accumulator > MAX_ACCUMULATOR) state.accumulator = MAX_ACCUMULATOR;
 
-                if (isCatchingUp && !hasFutureData) {
-                    // We are trying to catch up, but ran out of data. 
-                    // Break the loop to "Wait" for data to arrive in subsequent frames.
-                    // The accumulator remains high, so we resume catch-up later.
-                    break;
-                }
+                while (state.accumulator >= stepTime && steps < maxSteps && fftSize > 0) {
+                    // Check if we are starved for data during a catch-up phase
+                    // If we have a lot of time to simulate (accumulator high) but no data to cover it, 
+                    // we should PAUSE consumption and wait for data to arrive.
+                    // This prevents "fast forwarding" through empty space and drawing flat lines before the data arrives.
+                    const isCatchingUp = state.accumulator > (state.props.jitterBufferMs / 1000) * 1.5;
+                    const lastFrame = frameQueue.length > 0 ? frameQueue[frameQueue.length - 1] : null;
+                    const hasFutureData = lastFrame && lastFrame.time > state.renderTime;
 
-                state.accumulator -= stepTime;
-                state.renderTime += stepTime;
-                steps++;
-
-                // --- Pick Frame Logic ---
-                // Find frames around renderTime
-                // frameQueue is sorted by time
-
-                // Remove old frames
-                while (frameQueue.length > 2 && frameQueue[1].time < state.renderTime) {
-                    frameQueue.shift();
-                }
-
-                let displayBins: Float32Array | null = null;
-
-                if (frameQueue.length === 0) {
-                    // No data? 
-                    // displayBins remains null (or noise)
-                }
-                else if (state.renderTime < frameQueue[0].time) {
-                    // We are asking for time BEFORE our buffer? 
-                    // Just hold first frame? or blank?
-                    displayBins = frameQueue[0].fftBins;
-                }
-                else if (frameQueue.length === 1) {
-                    // Only one frame, hold it
-                    displayBins = frameQueue[0].fftBins;
-                }
-                else {
-                    // Interpolate between [0] and [1]
-                    const f0 = frameQueue[0];
-                    const f1 = frameQueue[1];
-                    // renderTime should be between f0.time and f1.time
-
-                    if (state.renderTime >= f1.time) {
-                        // Should have been shifted above, but safety fallback
-                        displayBins = f1.fftBins;
-                    } else {
-                        const alpha = (state.renderTime - f0.time) / (f1.time - f0.time);
-                        // Clamp alpha 0..1
-                        const a = Math.max(0, Math.min(1, alpha));
-
-                        // Perform interpolation
-                        // We can't easily alloc a new array every tick (GC churn). 
-                        // But JS typed arrays are fast. Let's try simple way first.
-                        // Optimization: reuse a temp buffer if needed.
-                        const len = fftSize;
-                        if (!state.averagedBins || state.averagedBins.length !== len) state.averagedBins = new Float32Array(len);
-
-                        const out = state.averagedBins;
-                        const b0 = f0.fftBins;
-                        const b1 = f1.fftBins;
-
-                        for (let i = 0; i < len; i++) {
-                            out[i] = b0[i] * (1 - a) + b1[i] * a;
-                        }
-                        displayBins = out;
+                    if (isCatchingUp && !hasFutureData) {
+                        // We are trying to catch up, but ran out of data. 
+                        // Break the loop to "Wait" for data to arrive in subsequent frames.
+                        // The accumulator remains high, so we resume catch-up later.
+                        break;
                     }
-                }
 
-                if (displayBins) {
-                    // Update waterfall color scale from data (independent of dB axis controls)
-                    let minDb = Infinity;
-                    let maxDb = -Infinity;
-                    for (let i = 0; i < displayBins.length; i++) {
-                        const v = displayBins[i];
-                        if (v < minDb) minDb = v;
-                        if (v > maxDb) maxDb = v;
+                    state.accumulator -= stepTime;
+                    state.renderTime += stepTime;
+                    steps++;
+
+                    // --- Pick Frame Logic ---
+                    // Find frames around renderTime
+                    // frameQueue is sorted by time
+
+                    // Remove old frames
+                    while (frameQueue.length > 2 && frameQueue[1].time < state.renderTime) {
+                        frameQueue.shift();
                     }
-                    if (Number.isFinite(minDb) && Number.isFinite(maxDb)) {
-                        if (!state.waterfallScaleReady) {
-                            state.waterfallMinDb = minDb;
-                            state.waterfallMaxDb = maxDb;
-                            state.waterfallScaleReady = true;
+
+                    let displayBins: Float32Array | null = null;
+
+                    if (frameQueue.length === 0) {
+                        // No data? 
+                        // displayBins remains null (or noise)
+                    }
+                    else if (state.renderTime < frameQueue[0].time) {
+                        // We are asking for time BEFORE our buffer? 
+                        // Just hold first frame? or blank?
+                        displayBins = frameQueue[0].fftBins;
+                    }
+                    else if (frameQueue.length === 1) {
+                        // Only one frame, hold it
+                        displayBins = frameQueue[0].fftBins;
+                    }
+                    else {
+                        // Interpolate between [0] and [1]
+                        const f0 = frameQueue[0];
+                        const f1 = frameQueue[1];
+                        // renderTime should be between f0.time and f1.time
+
+                        if (state.renderTime >= f1.time) {
+                            // Should have been shifted above, but safety fallback
+                            displayBins = f1.fftBins;
                         } else {
-                            const a = state.waterfallScaleAlpha;
-                            state.waterfallMinDb = state.waterfallMinDb * (1 - a) + minDb * a;
-                            state.waterfallMaxDb = state.waterfallMaxDb * (1 - a) + maxDb * a;
+                            const alpha = (state.renderTime - f0.time) / (f1.time - f0.time);
+                            // Clamp alpha 0..1
+                            const a = Math.max(0, Math.min(1, alpha));
+
+                            // Perform interpolation
+                            // We can't easily alloc a new array every tick (GC churn). 
+                            // But JS typed arrays are fast. Let's try simple way first.
+                            // Optimization: reuse a temp buffer if needed.
+                            const len = fftSize;
+                            if (!state.averagedBins || state.averagedBins.length !== len) state.averagedBins = new Float32Array(len);
+
+                            const out = state.averagedBins;
+                            const b0 = f0.fftBins;
+                            const b1 = f1.fftBins;
+
+                            for (let i = 0; i < len; i++) {
+                                out[i] = b0[i] * (1 - a) + b1[i] * a;
+                            }
+                            displayBins = out;
                         }
-                        if (state.waterfallMaxDb - state.waterfallMinDb < 1) {
-                            state.waterfallMaxDb = state.waterfallMinDb + 1;
+                    }
+
+                    if (displayBins) {
+                        // Update waterfall color scale from data (independent of dB axis controls)
+                        let minDb = Infinity;
+                        let maxDb = -Infinity;
+                        for (let i = 0; i < displayBins.length; i++) {
+                            const v = displayBins[i];
+                            if (v < minDb) minDb = v;
+                            if (v > maxDb) maxDb = v;
                         }
-                        if (state.props.waterfallScaleMode === 'fixed' && !state.waterfallFixedReady) {
-                            state.waterfallFixedMinDb = state.waterfallMinDb;
-                            state.waterfallFixedMaxDb = state.waterfallMaxDb;
-                            state.waterfallFixedReady = true;
-                            if (!controlledFixed) {
-                                setLocalFixedRange({ min: state.waterfallFixedMinDb, max: state.waterfallFixedMaxDb });
+                        if (Number.isFinite(minDb) && Number.isFinite(maxDb)) {
+                            if (!state.waterfallScaleReady) {
+                                state.waterfallMinDb = minDb;
+                                state.waterfallMaxDb = maxDb;
+                                state.waterfallScaleReady = true;
+                            } else {
+                                const a = state.waterfallScaleAlpha;
+                                state.waterfallMinDb = state.waterfallMinDb * (1 - a) + minDb * a;
+                                state.waterfallMaxDb = state.waterfallMaxDb * (1 - a) + maxDb * a;
+                            }
+                            if (state.waterfallMaxDb - state.waterfallMinDb < 1) {
+                                state.waterfallMaxDb = state.waterfallMinDb + 1;
+                            }
+                            if (state.props.waterfallScaleMode === 'fixed' && !state.waterfallFixedReady) {
+                                state.waterfallFixedMinDb = state.waterfallMinDb;
+                                state.waterfallFixedMaxDb = state.waterfallMaxDb;
+                                state.waterfallFixedReady = true;
+                                if (!controlledFixed) {
+                                    setLocalFixedRange({ min: state.waterfallFixedMinDb, max: state.waterfallFixedMaxDb });
+                                }
                             }
                         }
+
+                        // Upload to Waterfall
+                        gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
+                        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+                        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, state.waterfallRow, currentFftSize, 1, gl.RED, gl.FLOAT, displayBins);
+                        state.waterfallRow = (state.waterfallRow + 1) % state.waterfallHeight;
+
+                        // Also update averagedBins for Main Spectrum view (smoothing handled separately if desired, 
+                        // but for this implementation we simply use the interpolated value as the "current" value for the spectrum line)
+                        // If we want separate averaging for Spectrum Line (the 'averaging' prop), we should apply that on top.
+
+                        // We already wrote to averagedBins above for interpolation.
+                        // If we didn't interpolate (exact frame), we might need to copy.
+                        if (displayBins !== state.averagedBins) {
+                            state.averagedBins.set(displayBins);
+                        }
                     }
 
-                    // Upload to Waterfall
-                    gl.bindTexture(gl.TEXTURE_2D, state.waterfallTexture);
-                    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-                    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, state.waterfallRow, currentFftSize, 1, gl.RED, gl.FLOAT, displayBins);
-                    state.waterfallRow = (state.waterfallRow + 1) % state.waterfallHeight;
+                    // Markers Check
+                    const currentTimeMs = state.renderTime * 1000;
 
-                    // Also update averagedBins for Main Spectrum view (smoothing handled separately if desired, 
-                    // but for this implementation we simply use the interpolated value as the "current" value for the spectrum line)
-                    // If we want separate averaging for Spectrum Line (the 'averaging' prop), we should apply that on top.
+                    // Calculate max duration based on height and rate
+                    const durationSec = state.waterfallHeight / state.props.targetRate;
+                    const durationMs = durationSec * 1000;
 
-                    // We already wrote to averagedBins above for interpolation.
-                    // If we didn't interpolate (exact frame), we might need to copy.
-                    if (displayBins !== state.averagedBins) {
-                        state.averagedBins.set(displayBins);
+                    if (currentTimeMs - lastMarkerTime.current > 2000) { // Every 2s
+                        const date = new Date(currentTimeMs);
+                        const timeStr = date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        const newMarker = { id: currentTimeMs, label: timeStr, rowIndex: state.waterfallRow };
+
+                        // Add new marker
+                        const nextMarkers = [...markersRef.current, newMarker];
+
+                        // Filter markers that have scrolled off the ends
+                        const validMarkers = nextMarkers.filter(m => {
+                            return (currentTimeMs - m.id) < durationMs;
+                        });
+
+                        markersRef.current = validMarkers;
+                        setMarkers(validMarkers);
+                        lastMarkerTime.current = currentTimeMs;
                     }
-                }
-
-                // Markers Check
-                const currentTimeMs = state.renderTime * 1000;
-
-                // Calculate max duration based on height and rate
-                const durationSec = state.waterfallHeight / state.props.targetRate;
-                const durationMs = durationSec * 1000;
-
-                if (currentTimeMs - lastMarkerTime.current > 2000) { // Every 2s
-                    const date = new Date(currentTimeMs);
-                    const timeStr = date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    const newMarker = { id: currentTimeMs, label: timeStr, rowIndex: state.waterfallRow };
-
-                    // Add new marker
-                    const nextMarkers = [...markersRef.current, newMarker];
-
-                    // Filter markers that have scrolled off the ends
-                    const validMarkers = nextMarkers.filter(m => {
-                        return (currentTimeMs - m.id) < durationMs;
-                    });
-
-                    markersRef.current = validMarkers;
-                    setMarkers(validMarkers);
-                    lastMarkerTime.current = currentTimeMs;
                 }
             }
 

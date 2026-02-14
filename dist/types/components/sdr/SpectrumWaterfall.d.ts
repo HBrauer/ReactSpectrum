@@ -7,6 +7,7 @@ export interface SpectrumData {
 }
 export interface SpectrumWaterfallProps {
     data: SpectrumData[];
+    running?: boolean;
     refLevel?: number;
     displayRange?: number;
     averaging?: number;

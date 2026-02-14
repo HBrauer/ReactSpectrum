@@ -28,11 +28,13 @@ import { SpectrumWaterfall, SpectrumData } from 'spectrum-waterfall';
 
 export default function MySpectrumView() {
   const [frames, setFrames] = useState<SpectrumData[]>([]);
+  const [running, setRunning] = useState(true);
 
   return (
     <div style={{ width: '100%', height: '400px' }}>
       <SpectrumWaterfall
         data={frames}
+        running={running}
         refLevel={-20}
         displayRange={100}
         colorMap="turbo"
@@ -73,6 +75,7 @@ type SpectrumData = {
 
 Notes:
 - `data` can be an empty array; the component will render a blank view.
+- `running={false}` freezes the last rendered state. Switching back to `running={true}` clears old history and starts fresh.
 - Use `waterfallScaleMode="auto"` for dynamic scaling, or `"fixed"` for a fixed min/max.
 - WebGL2 is required.
 

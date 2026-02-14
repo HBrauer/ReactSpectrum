@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SpectrumWaterfall } from '@/components/sdr/SpectrumWaterfall';
 
 function App() {
@@ -10,6 +10,8 @@ function App() {
   const [waterfallScaleMode, setWaterfallScaleMode] = useState<'auto' | 'fixed'>('auto');
   const [waterfallFixedMinDb, setWaterfallFixedMinDb] = useState(-120);
   const [waterfallFixedMaxDb, setWaterfallFixedMaxDb] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+  const workerRef = useRef<Worker | null>(null);
 
   const [refLevel, setRefLevel] = useState(-20);
   const [displayRange, setDisplayRange] = useState(100);
@@ -17,23 +19,36 @@ function App() {
   useEffect(() => {
     // Spawn worker
     const worker = new Worker(new URL('./spectrum.worker.ts', import.meta.url), { type: 'module' });
+    workerRef.current = worker;
 
     worker.onmessage = (e) => {
       setFftData(e.data);
     };
 
-    worker.postMessage('start');
-
     return () => {
       worker.postMessage('stop');
       worker.terminate();
+      workerRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const worker = workerRef.current;
+    if (!worker) return;
+    worker.postMessage(isRunning ? 'start' : 'stop');
+  }, [isRunning]);
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-neutral-900 text-white flex flex-col">
       <div className="p-4 border-b border-white/10 flex gap-4 items-center">
         <h1 className="font-bold text-lg">React Spectrum</h1>
+        <button
+          type="button"
+          onClick={() => setIsRunning(prev => !prev)}
+          className="bg-neutral-800 border border-white/20 rounded px-2 py-1 text-sm hover:bg-neutral-700"
+        >
+          {isRunning ? 'Stop' : 'Restart'}
+        </button>
         <div className="flex gap-2 items-center text-sm">
           <label>Colormap:</label>
           <select value={colorMap} onChange={e => setColorMap(e.target.value)} className="bg-neutral-800 border border-white/20 rounded p-1">
@@ -90,6 +105,7 @@ function App() {
             onDisplayRangeChange={setDisplayRange}
             averaging={avg}
             colorMap={colorMap}
+            running={isRunning}
             waterfallScaleMode={waterfallScaleMode}
             waterfallFixedMinDb={waterfallFixedMinDb}
             waterfallFixedMaxDb={waterfallFixedMaxDb}

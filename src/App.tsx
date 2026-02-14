@@ -10,6 +10,7 @@ function App() {
   const [waterfallScaleMode, setWaterfallScaleMode] = useState<'auto' | 'fixed'>('auto');
   const [waterfallFixedMinDb, setWaterfallFixedMinDb] = useState(-120);
   const [waterfallFixedMaxDb, setWaterfallFixedMaxDb] = useState(0);
+  const [playbackMode, setPlaybackMode] = useState<'live' | 'replay'>('live');
   const [isRunning, setIsRunning] = useState(true);
   const workerRef = useRef<Worker | null>(null);
 
@@ -69,6 +70,17 @@ function App() {
           {avg.toFixed(2)}
         </div>
         <div className="flex gap-2 items-center text-sm">
+          <label>Mode:</label>
+          <select
+            value={playbackMode}
+            onChange={e => setPlaybackMode(e.target.value as 'live' | 'replay')}
+            className="bg-neutral-800 border border-white/20 rounded p-1"
+          >
+            <option value="live">Live</option>
+            <option value="replay">Replay</option>
+          </select>
+        </div>
+        <div className="flex gap-2 items-center text-sm">
           <label>WF Scale:</label>
           <select
             value={waterfallScaleMode}
@@ -106,6 +118,7 @@ function App() {
             averaging={avg}
             colorMap={colorMap}
             running={isRunning}
+            playbackMode={playbackMode}
             waterfallScaleMode={waterfallScaleMode}
             waterfallFixedMinDb={waterfallFixedMinDb}
             waterfallFixedMaxDb={waterfallFixedMaxDb}

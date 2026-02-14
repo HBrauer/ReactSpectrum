@@ -29,15 +29,21 @@ import { SpectrumWaterfall, SpectrumData } from 'spectrum-waterfall';
 export default function MySpectrumView() {
   const [frames, setFrames] = useState<SpectrumData[]>([]);
   const [running, setRunning] = useState(true);
+  const [playbackMode, setPlaybackMode] = useState<'live' | 'replay'>('live');
 
   return (
     <div style={{ width: '100%', height: '400px' }}>
       <button onClick={() => setRunning(v => !v)}>
         {running ? 'Stop' : 'Restart'}
       </button>
+      <select value={playbackMode} onChange={e => setPlaybackMode(e.target.value as 'live' | 'replay')}>
+        <option value="live">Live</option>
+        <option value="replay">Replay</option>
+      </select>
       <SpectrumWaterfall
         data={frames}
         running={running}
+        playbackMode={playbackMode}
         refLevel={-20}
         displayRange={100}
         colorMap="turbo"
@@ -79,8 +85,11 @@ type SpectrumData = {
 Notes:
 - `data` can be an empty array; the component will render a blank view.
 - `running` defaults to `true`.
+- `playbackMode` defaults to `live`.
 - `running={false}` freezes the last rendered spectrum/waterfall state (useful at end-of-file).
 - Switching `running` from `false` to `true` clears old internal history and starts fresh for new input.
+- `playbackMode="live"` keeps the playhead moving and will hold/repeat the latest frame if future data is missing.
+- `playbackMode="replay"` waits for future timestamped frames (no playhead run-ahead when source data is slow).
 - Use `waterfallScaleMode="auto"` for dynamic scaling, or `"fixed"` for a fixed min/max.
 - WebGL2 is required.
 
@@ -96,6 +105,13 @@ Typical file-player flow:
 1) Play file A with `running={true}`.
 2) End of file: set `running={false}` to hold last status on screen.
 3) Load file B: set `running={true}` and provide new frames.
+
+## Playback modes
+
+Use `playbackMode` to choose timeline behavior:
+
+- `live` (default): current behavior, render timeline keeps advancing at `targetRate`.
+- `replay`: render timeline advances only when future `data[i].time` frames exist; when data is late/sparse, the display holds until new timestamps arrive.
 
 ## Build (library)
 

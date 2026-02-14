@@ -8,6 +8,7 @@ export interface SpectrumData {
 export interface SpectrumWaterfallProps {
     data: SpectrumData[];
     running?: boolean;
+    playbackMode?: 'live' | 'replay';
     refLevel?: number;
     displayRange?: number;
     averaging?: number;

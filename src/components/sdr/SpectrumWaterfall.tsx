@@ -15,6 +15,7 @@ export interface SpectrumData {
 export interface SpectrumWaterfallProps {
     data: SpectrumData[]; // Strict array input
     running?: boolean; // When false, freeze the current waterfall/spectrum state
+    playbackMode?: 'live' | 'replay'; // live = keep moving, replay = wait for future timestamped data
     refLevel?: number;
     displayRange?: number;
     averaging?: number;
@@ -34,6 +35,7 @@ export interface SpectrumWaterfallProps {
 export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     data,
     running = true,
+    playbackMode = 'live',
     refLevel = 0,
     displayRange = 80,
     averaging = 0.5,
@@ -135,6 +137,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         // Props Cache
         props: {
             running,
+            playbackMode,
             refLevel,
             displayRange,
             colorMap,
@@ -167,6 +170,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
     useEffect(() => {
         stateRef.current.props = {
             running,
+            playbackMode,
             refLevel,
             displayRange,
             colorMap,
@@ -192,7 +196,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             gl.bindTexture(gl.TEXTURE_2D, stateRef.current.colormapTexture);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
         }
-    }, [running, refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode, waterfallFixedMinDb, waterfallFixedMaxDb]);
+    }, [running, playbackMode, refLevel, displayRange, colorMap, averaging, showPeakHold, targetRate, jitterBufferMs, waterfallScaleMode, waterfallFixedMinDb, waterfallFixedMaxDb]);
 
     // Restart transition: clear old waterfall/spectrum history only when moving from stopped -> running.
     useEffect(() => {
@@ -274,12 +278,10 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             const latestTime = queue[queue.length - 1].time;
             const lag = latestTime - state.renderTime;
 
-            if (lag > 5.0) {
+            if (lag > 5.0 && state.props.playbackMode === 'live') {
                 state.renderTime = latestTime - (state.props.jitterBufferMs / 1000);
-                while (queue.length > maxQueueSize) queue.shift();
-            } else {
-                while (queue.length > maxQueueSize) queue.shift();
             }
+            while (queue.length > maxQueueSize) queue.shift();
         }
 
     }, [data]);
@@ -483,13 +485,14 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                     // we should PAUSE consumption and wait for data to arrive.
                     // This prevents "fast forwarding" through empty space and drawing flat lines before the data arrives.
                     const isCatchingUp = state.accumulator > (state.props.jitterBufferMs / 1000) * 1.5;
+                    const isReplayMode = state.props.playbackMode === 'replay';
                     const lastFrame = frameQueue.length > 0 ? frameQueue[frameQueue.length - 1] : null;
                     const hasFutureData = lastFrame && lastFrame.time > state.renderTime;
+                    const shouldStallForMissingFutureData = isReplayMode || isCatchingUp;
 
-                    if (isCatchingUp && !hasFutureData) {
-                        // We are trying to catch up, but ran out of data. 
-                        // Break the loop to "Wait" for data to arrive in subsequent frames.
-                        // The accumulator remains high, so we resume catch-up later.
+                    if (shouldStallForMissingFutureData && !hasFutureData) {
+                        // In replay mode we intentionally do not accumulate wall-clock lag while waiting for the next timestamped frame.
+                        if (isReplayMode) state.accumulator = 0;
                         break;
                     }
 

@@ -1,61 +1,61 @@
-import zt, { useMemo as jt, useRef as J, useState as Ne, useEffect as Le } from "react";
-var rt = { exports: {} }, Je = {};
-var Dt;
-function or() {
-  if (Dt) return Je;
-  Dt = 1;
+import jt, { useMemo as Ot, useRef as Q, useState as Ce, useEffect as Ne } from "react";
+var nt = { exports: {} }, Ze = {};
+var At;
+function sr() {
+  if (At) return Ze;
+  At = 1;
   var t = /* @__PURE__ */ Symbol.for("react.transitional.element"), n = /* @__PURE__ */ Symbol.for("react.fragment");
-  function o(r, l, c) {
+  function o(r, i, c) {
     var u = null;
-    if (c !== void 0 && (u = "" + c), l.key !== void 0 && (u = "" + l.key), "key" in l) {
+    if (c !== void 0 && (u = "" + c), i.key !== void 0 && (u = "" + i.key), "key" in i) {
       c = {};
-      for (var b in l)
-        b !== "key" && (c[b] = l[b]);
-    } else c = l;
-    return l = c.ref, {
+      for (var b in i)
+        b !== "key" && (c[b] = i[b]);
+    } else c = i;
+    return i = c.ref, {
       $$typeof: t,
       type: r,
       key: u,
-      ref: l !== void 0 ? l : null,
+      ref: i !== void 0 ? i : null,
       props: c
     };
   }
-  return Je.Fragment = n, Je.jsx = o, Je.jsxs = o, Je;
+  return Ze.Fragment = n, Ze.jsx = o, Ze.jsxs = o, Ze;
 }
-var Qe = {};
-var At;
-function nr() {
-  return At || (At = 1, process.env.NODE_ENV !== "production" && (function() {
+var Ke = {};
+var Mt;
+function ir() {
+  return Mt || (Mt = 1, process.env.NODE_ENV !== "production" && (function() {
     function t(a) {
       if (a == null) return null;
       if (typeof a == "function")
-        return a.$$typeof === ke ? null : a.displayName || a.name || null;
+        return a.$$typeof === Z ? null : a.displayName || a.name || null;
       if (typeof a == "string") return a;
       switch (a) {
-        case N:
+        case C:
           return "Fragment";
-        case le:
+        case be:
           return "Profiler";
-        case Z:
+        case ae:
           return "StrictMode";
-        case oe:
+        case X:
           return "Suspense";
-        case pe:
+        case ge:
           return "SuspenseList";
-        case K:
+        case Le:
           return "Activity";
       }
       if (typeof a == "object")
         switch (typeof a.tag == "number" && console.error(
           "Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."
         ), a.$$typeof) {
-          case F:
+          case U:
             return "Portal";
-          case ce:
+          case B:
             return a.displayName || "Context";
-          case V:
+          case te:
             return (a._context.displayName || "Context") + ".Consumer";
-          case Y:
+          case se:
             var x = a.render;
             return a = a.displayName, a || (a = x.displayName || x.name || "", a = a !== "" ? "ForwardRef(" + a + ")" : "ForwardRef"), a;
           case h:
@@ -81,16 +81,16 @@ function nr() {
       }
       if (x) {
         x = console;
-        var w = x.error, y = typeof Symbol == "function" && Symbol.toStringTag && a[Symbol.toStringTag] || a.constructor.name || "Object";
-        return w.call(
+        var v = x.error, R = typeof Symbol == "function" && Symbol.toStringTag && a[Symbol.toStringTag] || a.constructor.name || "Object";
+        return v.call(
           x,
           "The provided key is an unsupported type %s. This value must be coerced to a string before using it here.",
-          y
+          R
         ), n(a);
       }
     }
     function r(a) {
-      if (a === N) return "<>";
+      if (a === C) return "<>";
       if (typeof a == "object" && a !== null && a.$$typeof === z)
         return "<...>";
       try {
@@ -100,49 +100,49 @@ function nr() {
         return "<...>";
       }
     }
-    function l() {
-      var a = B.A;
+    function i() {
+      var a = K.A;
       return a === null ? null : a.getOwner();
     }
     function c() {
       return Error("react-stack-top-frame");
     }
     function u(a) {
-      if (Fe.call(a, "key")) {
+      if (re.call(a, "key")) {
         var x = Object.getOwnPropertyDescriptor(a, "key").get;
         if (x && x.isReactWarning) return !1;
       }
       return a.key !== void 0;
     }
     function b(a, x) {
-      function w() {
-        X || (X = !0, console.error(
+      function v() {
+        V || (V = !0, console.error(
           "%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)",
           x
         ));
       }
-      w.isReactWarning = !0, Object.defineProperty(a, "key", {
-        get: w,
+      v.isReactWarning = !0, Object.defineProperty(a, "key", {
+        get: v,
         configurable: !0
       });
     }
-    function d() {
+    function m() {
       var a = t(this.type);
-      return W[a] || (W[a] = !0, console.error(
+      return ee[a] || (ee[a] = !0, console.error(
         "Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release."
       )), a = this.props.ref, a !== void 0 ? a : null;
     }
-    function g(a, x, w, y, $, be) {
-      var v = w.ref;
+    function g(a, x, v, R, Y, ie) {
+      var w = v.ref;
       return a = {
-        $$typeof: Q,
+        $$typeof: O,
         type: a,
         key: x,
-        props: w,
-        _owner: y
-      }, (v !== void 0 ? v : null) !== null ? Object.defineProperty(a, "ref", {
+        props: v,
+        _owner: R
+      }, (w !== void 0 ? w : null) !== null ? Object.defineProperty(a, "ref", {
         enumerable: !1,
-        get: d
+        get: m
       }) : Object.defineProperty(a, "ref", { enumerable: !1, value: null }), a._store = {}, Object.defineProperty(a._store, "validated", {
         configurable: !1,
         enumerable: !1,
@@ -157,229 +157,229 @@ function nr() {
         configurable: !1,
         enumerable: !1,
         writable: !0,
-        value: $
+        value: Y
       }), Object.defineProperty(a, "_debugTask", {
         configurable: !1,
         enumerable: !1,
         writable: !0,
-        value: be
+        value: ie
       }), Object.freeze && (Object.freeze(a.props), Object.freeze(a)), a;
     }
-    function S(a, x, w, y, $, be) {
-      var v = x.children;
-      if (v !== void 0)
-        if (y)
-          if (j(v)) {
-            for (y = 0; y < v.length; y++)
-              D(v[y]);
-            Object.freeze && Object.freeze(v);
+    function y(a, x, v, R, Y, ie) {
+      var w = x.children;
+      if (w !== void 0)
+        if (R)
+          if (Ie(w)) {
+            for (R = 0; R < w.length; R++)
+              M(w[R]);
+            Object.freeze && Object.freeze(w);
           } else
             console.error(
               "React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead."
             );
-        else D(v);
-      if (Fe.call(x, "key")) {
-        v = t(a);
-        var ae = Object.keys(x).filter(function(ge) {
-          return ge !== "key";
+        else M(w);
+      if (re.call(x, "key")) {
+        w = t(a);
+        var le = Object.keys(x).filter(function(ue) {
+          return ue !== "key";
         });
-        y = 0 < ae.length ? "{key: someKey, " + ae.join(": ..., ") + ": ...}" : "{key: someKey}", Ee[v + y] || (ae = 0 < ae.length ? "{" + ae.join(": ..., ") + ": ...}" : "{}", console.error(
+        R = 0 < le.length ? "{key: someKey, " + le.join(": ..., ") + ": ...}" : "{key: someKey}", Ue[w + R] || (le = 0 < le.length ? "{" + le.join(": ..., ") + ": ...}" : "{}", console.error(
           `A props object containing a "key" prop is being spread into JSX:
   let props = %s;
   <%s {...props} />
 React keys must be passed directly to JSX without using spread:
   let props = %s;
   <%s key={someKey} {...props} />`,
-          y,
-          v,
-          ae,
-          v
-        ), Ee[v + y] = !0);
+          R,
+          w,
+          le,
+          w
+        ), Ue[w + R] = !0);
       }
-      if (v = null, w !== void 0 && (o(w), v = "" + w), u(x) && (o(x.key), v = "" + x.key), "key" in x) {
-        w = {};
-        for (var ee in x)
-          ee !== "key" && (w[ee] = x[ee]);
-      } else w = x;
-      return v && b(
-        w,
+      if (w = null, v !== void 0 && (o(v), w = "" + v), u(x) && (o(x.key), w = "" + x.key), "key" in x) {
+        v = {};
+        for (var ce in x)
+          ce !== "key" && (v[ce] = x[ce]);
+      } else v = x;
+      return w && b(
+        v,
         typeof a == "function" ? a.displayName || a.name || "Unknown" : a
       ), g(
         a,
-        v,
         w,
-        l(),
-        $,
-        be
+        v,
+        i(),
+        Y,
+        ie
       );
     }
+    function M(a) {
+      D(a) ? a._store && (a._store.validated = 1) : typeof a == "object" && a !== null && a.$$typeof === z && (a._payload.status === "fulfilled" ? D(a._payload.value) && a._payload.value._store && (a._payload.value._store.validated = 1) : a._store && (a._store.validated = 1));
+    }
     function D(a) {
-      A(a) ? a._store && (a._store.validated = 1) : typeof a == "object" && a !== null && a.$$typeof === z && (a._payload.status === "fulfilled" ? A(a._payload.value) && a._payload.value._store && (a._payload.value._store.validated = 1) : a._store && (a._store.validated = 1));
+      return typeof a == "object" && a !== null && a.$$typeof === O;
     }
-    function A(a) {
-      return typeof a == "object" && a !== null && a.$$typeof === Q;
-    }
-    var C = zt, Q = /* @__PURE__ */ Symbol.for("react.transitional.element"), F = /* @__PURE__ */ Symbol.for("react.portal"), N = /* @__PURE__ */ Symbol.for("react.fragment"), Z = /* @__PURE__ */ Symbol.for("react.strict_mode"), le = /* @__PURE__ */ Symbol.for("react.profiler"), V = /* @__PURE__ */ Symbol.for("react.consumer"), ce = /* @__PURE__ */ Symbol.for("react.context"), Y = /* @__PURE__ */ Symbol.for("react.forward_ref"), oe = /* @__PURE__ */ Symbol.for("react.suspense"), pe = /* @__PURE__ */ Symbol.for("react.suspense_list"), h = /* @__PURE__ */ Symbol.for("react.memo"), z = /* @__PURE__ */ Symbol.for("react.lazy"), K = /* @__PURE__ */ Symbol.for("react.activity"), ke = /* @__PURE__ */ Symbol.for("react.client.reference"), B = C.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, Fe = Object.prototype.hasOwnProperty, j = Array.isArray, ne = console.createTask ? console.createTask : function() {
+    var I = jt, O = /* @__PURE__ */ Symbol.for("react.transitional.element"), U = /* @__PURE__ */ Symbol.for("react.portal"), C = /* @__PURE__ */ Symbol.for("react.fragment"), ae = /* @__PURE__ */ Symbol.for("react.strict_mode"), be = /* @__PURE__ */ Symbol.for("react.profiler"), te = /* @__PURE__ */ Symbol.for("react.consumer"), B = /* @__PURE__ */ Symbol.for("react.context"), se = /* @__PURE__ */ Symbol.for("react.forward_ref"), X = /* @__PURE__ */ Symbol.for("react.suspense"), ge = /* @__PURE__ */ Symbol.for("react.suspense_list"), h = /* @__PURE__ */ Symbol.for("react.memo"), z = /* @__PURE__ */ Symbol.for("react.lazy"), Le = /* @__PURE__ */ Symbol.for("react.activity"), Z = /* @__PURE__ */ Symbol.for("react.client.reference"), K = I.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, re = Object.prototype.hasOwnProperty, Ie = Array.isArray, N = console.createTask ? console.createTask : function() {
       return null;
     };
-    C = {
+    I = {
       react_stack_bottom_frame: function(a) {
         return a();
       }
     };
-    var X, W = {}, p = C.react_stack_bottom_frame.bind(
-      C,
+    var V, ee = {}, p = I.react_stack_bottom_frame.bind(
+      I,
       c
-    )(), Ue = ne(r(c)), Ee = {};
-    Qe.Fragment = N, Qe.jsx = function(a, x, w) {
-      var y = 1e4 > B.recentlyCreatedOwnerStacks++;
-      return S(
+    )(), _e = N(r(c)), Ue = {};
+    Ke.Fragment = C, Ke.jsx = function(a, x, v) {
+      var R = 1e4 > K.recentlyCreatedOwnerStacks++;
+      return y(
         a,
         x,
-        w,
+        v,
         !1,
-        y ? Error("react-stack-top-frame") : p,
-        y ? ne(r(a)) : Ue
+        R ? Error("react-stack-top-frame") : p,
+        R ? N(r(a)) : _e
       );
-    }, Qe.jsxs = function(a, x, w) {
-      var y = 1e4 > B.recentlyCreatedOwnerStacks++;
-      return S(
+    }, Ke.jsxs = function(a, x, v) {
+      var R = 1e4 > K.recentlyCreatedOwnerStacks++;
+      return y(
         a,
         x,
-        w,
+        v,
         !0,
-        y ? Error("react-stack-top-frame") : p,
-        y ? ne(r(a)) : Ue
+        R ? Error("react-stack-top-frame") : p,
+        R ? N(r(a)) : _e
       );
     };
-  })()), Qe;
+  })()), Ke;
 }
-var Mt;
-function ar() {
-  return Mt || (Mt = 1, process.env.NODE_ENV === "production" ? rt.exports = or() : rt.exports = nr()), rt.exports;
+var Pt;
+function lr() {
+  return Pt || (Pt = 1, process.env.NODE_ENV === "production" ? nt.exports = sr() : nt.exports = ir()), nt.exports;
 }
-var _ = ar();
-function Ot(t) {
+var S = lr();
+function Bt(t) {
   var n, o, r = "";
   if (typeof t == "string" || typeof t == "number") r += t;
   else if (typeof t == "object") if (Array.isArray(t)) {
-    var l = t.length;
-    for (n = 0; n < l; n++) t[n] && (o = Ot(t[n])) && (r && (r += " "), r += o);
+    var i = t.length;
+    for (n = 0; n < i; n++) t[n] && (o = Bt(t[n])) && (r && (r += " "), r += o);
   } else for (o in t) t[o] && (r && (r += " "), r += o);
   return r;
 }
-function sr() {
-  for (var t, n, o = 0, r = "", l = arguments.length; o < l; o++) (t = arguments[o]) && (n = Ot(t)) && (r && (r += " "), r += n);
+function cr() {
+  for (var t, n, o = 0, r = "", i = arguments.length; o < i; o++) (t = arguments[o]) && (n = Bt(t)) && (r && (r += " "), r += n);
   return r;
 }
-const ir = (t, n) => {
+const ur = (t, n) => {
   const o = new Array(t.length + n.length);
   for (let r = 0; r < t.length; r++)
     o[r] = t[r];
   for (let r = 0; r < n.length; r++)
     o[t.length + r] = n[r];
   return o;
-}, lr = (t, n) => ({
+}, dr = (t, n) => ({
   classGroupId: t,
   validator: n
-}), Bt = (t = /* @__PURE__ */ new Map(), n = null, o) => ({
+}), Xt = (t = /* @__PURE__ */ new Map(), n = null, o) => ({
   nextPart: t,
   validators: n,
   classGroupId: o
-}), at = "-", Pt = [], cr = "arbitrary..", ur = (t) => {
-  const n = fr(t), {
+}), it = "-", Ct = [], fr = "arbitrary..", mr = (t) => {
+  const n = br(t), {
     conflictingClassGroups: o,
     conflictingClassGroupModifiers: r
   } = t;
   return {
     getClassGroupId: (u) => {
       if (u.startsWith("[") && u.endsWith("]"))
-        return dr(u);
-      const b = u.split(at), d = b[0] === "" && b.length > 1 ? 1 : 0;
-      return Xt(b, d, n);
+        return pr(u);
+      const b = u.split(it), m = b[0] === "" && b.length > 1 ? 1 : 0;
+      return Gt(b, m, n);
     },
     getConflictingClassGroupIds: (u, b) => {
       if (b) {
-        const d = r[u], g = o[u];
-        return d ? g ? ir(g, d) : d : g || Pt;
+        const m = r[u], g = o[u];
+        return m ? g ? ur(g, m) : m : g || Ct;
       }
-      return o[u] || Pt;
+      return o[u] || Ct;
     }
   };
-}, Xt = (t, n, o) => {
+}, Gt = (t, n, o) => {
   if (t.length - n === 0)
     return o.classGroupId;
-  const l = t[n], c = o.nextPart.get(l);
+  const i = t[n], c = o.nextPart.get(i);
   if (c) {
-    const g = Xt(t, n + 1, c);
+    const g = Gt(t, n + 1, c);
     if (g) return g;
   }
   const u = o.validators;
   if (u === null)
     return;
-  const b = n === 0 ? t.join(at) : t.slice(n).join(at), d = u.length;
-  for (let g = 0; g < d; g++) {
-    const S = u[g];
-    if (S.validator(b))
-      return S.classGroupId;
+  const b = n === 0 ? t.join(it) : t.slice(n).join(it), m = u.length;
+  for (let g = 0; g < m; g++) {
+    const y = u[g];
+    if (y.validator(b))
+      return y.classGroupId;
   }
-}, dr = (t) => t.slice(1, -1).indexOf(":") === -1 ? void 0 : (() => {
+}, pr = (t) => t.slice(1, -1).indexOf(":") === -1 ? void 0 : (() => {
   const n = t.slice(1, -1), o = n.indexOf(":"), r = n.slice(0, o);
-  return r ? cr + r : void 0;
-})(), fr = (t) => {
+  return r ? fr + r : void 0;
+})(), br = (t) => {
   const {
     theme: n,
     classGroups: o
   } = t;
-  return mr(o, n);
-}, mr = (t, n) => {
-  const o = Bt();
+  return gr(o, n);
+}, gr = (t, n) => {
+  const o = Xt();
   for (const r in t) {
-    const l = t[r];
-    ht(l, o, r, n);
+    const i = t[r];
+    ht(i, o, r, n);
   }
   return o;
 }, ht = (t, n, o, r) => {
-  const l = t.length;
-  for (let c = 0; c < l; c++) {
+  const i = t.length;
+  for (let c = 0; c < i; c++) {
     const u = t[c];
-    pr(u, n, o, r);
+    hr(u, n, o, r);
   }
-}, pr = (t, n, o, r) => {
+}, hr = (t, n, o, r) => {
   if (typeof t == "string") {
-    br(t, n, o);
+    xr(t, n, o);
     return;
   }
   if (typeof t == "function") {
-    gr(t, n, o, r);
+    wr(t, n, o, r);
     return;
   }
-  hr(t, n, o, r);
-}, br = (t, n, o) => {
-  const r = t === "" ? n : Gt(n, t);
+  vr(t, n, o, r);
+}, xr = (t, n, o) => {
+  const r = t === "" ? n : Vt(n, t);
   r.classGroupId = o;
-}, gr = (t, n, o, r) => {
-  if (xr(t)) {
+}, wr = (t, n, o, r) => {
+  if (Tr(t)) {
     ht(t(r), n, o, r);
     return;
   }
-  n.validators === null && (n.validators = []), n.validators.push(lr(o, t));
-}, hr = (t, n, o, r) => {
-  const l = Object.entries(t), c = l.length;
+  n.validators === null && (n.validators = []), n.validators.push(dr(o, t));
+}, vr = (t, n, o, r) => {
+  const i = Object.entries(t), c = i.length;
   for (let u = 0; u < c; u++) {
-    const [b, d] = l[u];
-    ht(d, Gt(n, b), o, r);
+    const [b, m] = i[u];
+    ht(m, Vt(n, b), o, r);
   }
-}, Gt = (t, n) => {
+}, Vt = (t, n) => {
   let o = t;
-  const r = n.split(at), l = r.length;
-  for (let c = 0; c < l; c++) {
+  const r = n.split(it), i = r.length;
+  for (let c = 0; c < i; c++) {
     const u = r[c];
     let b = o.nextPart.get(u);
-    b || (b = Bt(), o.nextPart.set(u, b)), o = b;
+    b || (b = Xt(), o.nextPart.set(u, b)), o = b;
   }
   return o;
-}, xr = (t) => "isThemeGetter" in t && t.isThemeGetter === !0, wr = (t) => {
+}, Tr = (t) => "isThemeGetter" in t && t.isThemeGetter === !0, yr = (t) => {
   if (t < 1)
     return {
       get: () => {
@@ -388,7 +388,7 @@ const ir = (t, n) => {
       }
     };
   let n = 0, o = /* @__PURE__ */ Object.create(null), r = /* @__PURE__ */ Object.create(null);
-  const l = (c, u) => {
+  const i = (c, u) => {
     o[c] = u, n++, n > t && (n = 0, r = o, o = /* @__PURE__ */ Object.create(null));
   };
   return {
@@ -397,168 +397,168 @@ const ir = (t, n) => {
       if (u !== void 0)
         return u;
       if ((u = r[c]) !== void 0)
-        return l(c, u), u;
+        return i(c, u), u;
     },
     set(c, u) {
-      c in o ? o[c] = u : l(c, u);
+      c in o ? o[c] = u : i(c, u);
     }
   };
-}, gt = "!", Ct = ":", vr = [], Nt = (t, n, o, r, l) => ({
+}, gt = "!", Nt = ":", Rr = [], Ft = (t, n, o, r, i) => ({
   modifiers: t,
   hasImportantModifier: n,
   baseClassName: o,
   maybePostfixModifierPosition: r,
-  isExternal: l
-}), Tr = (t) => {
+  isExternal: i
+}), kr = (t) => {
   const {
     prefix: n,
     experimentalParseClassName: o
   } = t;
-  let r = (l) => {
+  let r = (i) => {
     const c = [];
-    let u = 0, b = 0, d = 0, g;
-    const S = l.length;
-    for (let F = 0; F < S; F++) {
-      const N = l[F];
+    let u = 0, b = 0, m = 0, g;
+    const y = i.length;
+    for (let U = 0; U < y; U++) {
+      const C = i[U];
       if (u === 0 && b === 0) {
-        if (N === Ct) {
-          c.push(l.slice(d, F)), d = F + 1;
+        if (C === Nt) {
+          c.push(i.slice(m, U)), m = U + 1;
           continue;
         }
-        if (N === "/") {
-          g = F;
+        if (C === "/") {
+          g = U;
           continue;
         }
       }
-      N === "[" ? u++ : N === "]" ? u-- : N === "(" ? b++ : N === ")" && b--;
+      C === "[" ? u++ : C === "]" ? u-- : C === "(" ? b++ : C === ")" && b--;
     }
-    const D = c.length === 0 ? l : l.slice(d);
-    let A = D, C = !1;
-    D.endsWith(gt) ? (A = D.slice(0, -1), C = !0) : (
+    const M = c.length === 0 ? i : i.slice(m);
+    let D = M, I = !1;
+    M.endsWith(gt) ? (D = M.slice(0, -1), I = !0) : (
       /**
        * In Tailwind CSS v3 the important modifier was at the start of the base class name. This is still supported for legacy reasons.
        * @see https://github.com/dcastil/tailwind-merge/issues/513#issuecomment-2614029864
        */
-      D.startsWith(gt) && (A = D.slice(1), C = !0)
+      M.startsWith(gt) && (D = M.slice(1), I = !0)
     );
-    const Q = g && g > d ? g - d : void 0;
-    return Nt(c, C, A, Q);
+    const O = g && g > m ? g - m : void 0;
+    return Ft(c, I, D, O);
   };
   if (n) {
-    const l = n + Ct, c = r;
-    r = (u) => u.startsWith(l) ? c(u.slice(l.length)) : Nt(vr, !1, u, void 0, !0);
+    const i = n + Nt, c = r;
+    r = (u) => u.startsWith(i) ? c(u.slice(i.length)) : Ft(Rr, !1, u, void 0, !0);
   }
   if (o) {
-    const l = r;
+    const i = r;
     r = (c) => o({
       className: c,
-      parseClassName: l
+      parseClassName: i
     });
   }
   return r;
-}, yr = (t) => {
+}, Er = (t) => {
   const n = /* @__PURE__ */ new Map();
   return t.orderSensitiveModifiers.forEach((o, r) => {
     n.set(o, 1e6 + r);
   }), (o) => {
     const r = [];
-    let l = [];
+    let i = [];
     for (let c = 0; c < o.length; c++) {
-      const u = o[c], b = u[0] === "[", d = n.has(u);
-      b || d ? (l.length > 0 && (l.sort(), r.push(...l), l = []), r.push(u)) : l.push(u);
+      const u = o[c], b = u[0] === "[", m = n.has(u);
+      b || m ? (i.length > 0 && (i.sort(), r.push(...i), i = []), r.push(u)) : i.push(u);
     }
-    return l.length > 0 && (l.sort(), r.push(...l)), r;
+    return i.length > 0 && (i.sort(), r.push(...i)), r;
   };
-}, Rr = (t) => ({
-  cache: wr(t.cacheSize),
-  parseClassName: Tr(t),
-  sortModifiers: yr(t),
-  ...ur(t)
-}), kr = /\s+/, Er = (t, n) => {
+}, _r = (t) => ({
+  cache: yr(t.cacheSize),
+  parseClassName: kr(t),
+  sortModifiers: Er(t),
+  ...mr(t)
+}), Sr = /\s+/, Dr = (t, n) => {
   const {
     parseClassName: o,
     getClassGroupId: r,
-    getConflictingClassGroupIds: l,
+    getConflictingClassGroupIds: i,
     sortModifiers: c
-  } = n, u = [], b = t.trim().split(kr);
-  let d = "";
+  } = n, u = [], b = t.trim().split(Sr);
+  let m = "";
   for (let g = b.length - 1; g >= 0; g -= 1) {
-    const S = b[g], {
-      isExternal: D,
-      modifiers: A,
-      hasImportantModifier: C,
-      baseClassName: Q,
-      maybePostfixModifierPosition: F
-    } = o(S);
-    if (D) {
-      d = S + (d.length > 0 ? " " + d : d);
+    const y = b[g], {
+      isExternal: M,
+      modifiers: D,
+      hasImportantModifier: I,
+      baseClassName: O,
+      maybePostfixModifierPosition: U
+    } = o(y);
+    if (M) {
+      m = y + (m.length > 0 ? " " + m : m);
       continue;
     }
-    let N = !!F, Z = r(N ? Q.substring(0, F) : Q);
-    if (!Z) {
-      if (!N) {
-        d = S + (d.length > 0 ? " " + d : d);
+    let C = !!U, ae = r(C ? O.substring(0, U) : O);
+    if (!ae) {
+      if (!C) {
+        m = y + (m.length > 0 ? " " + m : m);
         continue;
       }
-      if (Z = r(Q), !Z) {
-        d = S + (d.length > 0 ? " " + d : d);
+      if (ae = r(O), !ae) {
+        m = y + (m.length > 0 ? " " + m : m);
         continue;
       }
-      N = !1;
+      C = !1;
     }
-    const le = A.length === 0 ? "" : A.length === 1 ? A[0] : c(A).join(":"), V = C ? le + gt : le, ce = V + Z;
-    if (u.indexOf(ce) > -1)
+    const be = D.length === 0 ? "" : D.length === 1 ? D[0] : c(D).join(":"), te = I ? be + gt : be, B = te + ae;
+    if (u.indexOf(B) > -1)
       continue;
-    u.push(ce);
-    const Y = l(Z, N);
-    for (let oe = 0; oe < Y.length; ++oe) {
-      const pe = Y[oe];
-      u.push(V + pe);
+    u.push(B);
+    const se = i(ae, C);
+    for (let X = 0; X < se.length; ++X) {
+      const ge = se[X];
+      u.push(te + ge);
     }
-    d = S + (d.length > 0 ? " " + d : d);
+    m = y + (m.length > 0 ? " " + m : m);
   }
-  return d;
-}, _r = (...t) => {
-  let n = 0, o, r, l = "";
+  return m;
+}, Ar = (...t) => {
+  let n = 0, o, r, i = "";
   for (; n < t.length; )
-    (o = t[n++]) && (r = Vt(o)) && (l && (l += " "), l += r);
-  return l;
-}, Vt = (t) => {
+    (o = t[n++]) && (r = Yt(o)) && (i && (i += " "), i += r);
+  return i;
+}, Yt = (t) => {
   if (typeof t == "string")
     return t;
   let n, o = "";
   for (let r = 0; r < t.length; r++)
-    t[r] && (n = Vt(t[r])) && (o && (o += " "), o += n);
+    t[r] && (n = Yt(t[r])) && (o && (o += " "), o += n);
   return o;
-}, Sr = (t, ...n) => {
-  let o, r, l, c;
-  const u = (d) => {
-    const g = n.reduce((S, D) => D(S), t());
-    return o = Rr(g), r = o.cache.get, l = o.cache.set, c = b, b(d);
-  }, b = (d) => {
-    const g = r(d);
+}, Mr = (t, ...n) => {
+  let o, r, i, c;
+  const u = (m) => {
+    const g = n.reduce((y, M) => M(y), t());
+    return o = _r(g), r = o.cache.get, i = o.cache.set, c = b, b(m);
+  }, b = (m) => {
+    const g = r(m);
     if (g)
       return g;
-    const S = Er(d, o);
-    return l(d, S), S;
+    const y = Dr(m, o);
+    return i(m, y), y;
   };
-  return c = u, (...d) => c(_r(...d));
-}, Dr = [], I = (t) => {
-  const n = (o) => o[t] || Dr;
+  return c = u, (...m) => c(Ar(...m));
+}, Pr = [], L = (t) => {
+  const n = (o) => o[t] || Pr;
   return n.isThemeGetter = !0, n;
-}, Yt = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, Wt = /^\((?:(\w[\w-]*):)?(.+)\)$/i, Ar = /^\d+\/\d+$/, Mr = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, Pr = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, Cr = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, Nr = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, Lr = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, Ge = (t) => Ar.test(t), T = (t) => !!t && !Number.isNaN(Number(t)), Ie = (t) => !!t && Number.isInteger(Number(t)), ft = (t) => t.endsWith("%") && T(t.slice(0, -1)), Ae = (t) => Mr.test(t), Ir = () => !0, Fr = (t) => (
+}, Wt = /^\[(?:(\w[\w-]*):)?(.+)\]$/i, $t = /^\((?:(\w[\w-]*):)?(.+)\)$/i, Cr = /^\d+\/\d+$/, Nr = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/, Fr = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/, Lr = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\(.+\)$/, Ir = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/, Ur = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/, Ve = (t) => Cr.test(t), T = (t) => !!t && !Number.isNaN(Number(t)), Fe = (t) => !!t && Number.isInteger(Number(t)), ft = (t) => t.endsWith("%") && T(t.slice(0, -1)), Ee = (t) => Nr.test(t), zr = () => !0, jr = (t) => (
   // `colorFunctionRegex` check is necessary because color functions can have percentages in them which which would be incorrectly classified as lengths.
   // For example, `hsl(0 0% 0%)` would be classified as a length without this check.
   // I could also use lookbehind assertion in `lengthUnitRegex` but that isn't supported widely enough.
-  Pr.test(t) && !Cr.test(t)
-), $t = () => !1, Ur = (t) => Nr.test(t), zr = (t) => Lr.test(t), jr = (t) => !f(t) && !m(t), Or = (t) => Ve(t, Jt, $t), f = (t) => Yt.test(t), je = (t) => Ve(t, Qt, Fr), mt = (t) => Ve(t, Yr, T), Lt = (t) => Ve(t, qt, $t), Br = (t) => Ve(t, Ht, zr), ot = (t) => Ve(t, Zt, Ur), m = (t) => Wt.test(t), Ze = (t) => Ye(t, Qt), Xr = (t) => Ye(t, Wr), It = (t) => Ye(t, qt), Gr = (t) => Ye(t, Jt), Vr = (t) => Ye(t, Ht), nt = (t) => Ye(t, Zt, !0), Ve = (t, n, o) => {
-  const r = Yt.exec(t);
-  return r ? r[1] ? n(r[1]) : o(r[2]) : !1;
-}, Ye = (t, n, o = !1) => {
+  Fr.test(t) && !Lr.test(t)
+), qt = () => !1, Or = (t) => Ir.test(t), Br = (t) => Ur.test(t), Xr = (t) => !d(t) && !f(t), Gr = (t) => Ye(t, Qt, qt), d = (t) => Wt.test(t), Oe = (t) => Ye(t, Zt, jr), mt = (t) => Ye(t, qr, T), Lt = (t) => Ye(t, Ht, qt), Vr = (t) => Ye(t, Jt, Br), at = (t) => Ye(t, Kt, Or), f = (t) => $t.test(t), et = (t) => We(t, Zt), Yr = (t) => We(t, Hr), It = (t) => We(t, Ht), Wr = (t) => We(t, Qt), $r = (t) => We(t, Jt), st = (t) => We(t, Kt, !0), Ye = (t, n, o) => {
   const r = Wt.exec(t);
+  return r ? r[1] ? n(r[1]) : o(r[2]) : !1;
+}, We = (t, n, o = !1) => {
+  const r = $t.exec(t);
   return r ? r[1] ? n(r[1]) : o : !1;
-}, qt = (t) => t === "position" || t === "percentage", Ht = (t) => t === "image" || t === "url", Jt = (t) => t === "length" || t === "size" || t === "bg-size", Qt = (t) => t === "length", Yr = (t) => t === "number", Wr = (t) => t === "family-name", Zt = (t) => t === "shadow", $r = () => {
-  const t = I("color"), n = I("font"), o = I("text"), r = I("font-weight"), l = I("tracking"), c = I("leading"), u = I("breakpoint"), b = I("container"), d = I("spacing"), g = I("radius"), S = I("shadow"), D = I("inset-shadow"), A = I("text-shadow"), C = I("drop-shadow"), Q = I("blur"), F = I("perspective"), N = I("aspect"), Z = I("ease"), le = I("animate"), V = () => ["auto", "avoid", "all", "avoid-page", "page", "left", "right", "column"], ce = () => [
+}, Ht = (t) => t === "position" || t === "percentage", Jt = (t) => t === "image" || t === "url", Qt = (t) => t === "length" || t === "size" || t === "bg-size", Zt = (t) => t === "length", qr = (t) => t === "number", Hr = (t) => t === "family-name", Kt = (t) => t === "shadow", Jr = () => {
+  const t = L("color"), n = L("font"), o = L("text"), r = L("font-weight"), i = L("tracking"), c = L("leading"), u = L("breakpoint"), b = L("container"), m = L("spacing"), g = L("radius"), y = L("shadow"), M = L("inset-shadow"), D = L("text-shadow"), I = L("drop-shadow"), O = L("blur"), U = L("perspective"), C = L("aspect"), ae = L("ease"), be = L("animate"), te = () => ["auto", "avoid", "all", "avoid-page", "page", "left", "right", "column"], B = () => [
     "center",
     "top",
     "bottom",
@@ -576,51 +576,51 @@ const ir = (t, n) => {
     "bottom-left",
     // Deprecated since Tailwind CSS v4.1.0, see https://github.com/tailwindlabs/tailwindcss/pull/17378
     "left-bottom"
-  ], Y = () => [...ce(), m, f], oe = () => ["auto", "hidden", "clip", "visible", "scroll"], pe = () => ["auto", "contain", "none"], h = () => [m, f, d], z = () => [Ge, "full", "auto", ...h()], K = () => [Ie, "none", "subgrid", m, f], ke = () => ["auto", {
-    span: ["full", Ie, m, f]
-  }, Ie, m, f], B = () => [Ie, "auto", m, f], Fe = () => ["auto", "min", "max", "fr", m, f], j = () => ["start", "end", "center", "between", "around", "evenly", "stretch", "baseline", "center-safe", "end-safe"], ne = () => ["start", "end", "center", "stretch", "center-safe", "end-safe"], X = () => ["auto", ...h()], W = () => [Ge, "auto", "full", "dvw", "dvh", "lvw", "lvh", "svw", "svh", "min", "max", "fit", ...h()], p = () => [t, m, f], Ue = () => [...ce(), It, Lt, {
-    position: [m, f]
-  }], Ee = () => ["no-repeat", {
+  ], se = () => [...B(), f, d], X = () => ["auto", "hidden", "clip", "visible", "scroll"], ge = () => ["auto", "contain", "none"], h = () => [f, d, m], z = () => [Ve, "full", "auto", ...h()], Le = () => [Fe, "none", "subgrid", f, d], Z = () => ["auto", {
+    span: ["full", Fe, f, d]
+  }, Fe, f, d], K = () => [Fe, "auto", f, d], re = () => ["auto", "min", "max", "fr", f, d], Ie = () => ["start", "end", "center", "between", "around", "evenly", "stretch", "baseline", "center-safe", "end-safe"], N = () => ["start", "end", "center", "stretch", "center-safe", "end-safe"], V = () => ["auto", ...h()], ee = () => [Ve, "auto", "full", "dvw", "dvh", "lvw", "lvh", "svw", "svh", "min", "max", "fit", ...h()], p = () => [t, f, d], _e = () => [...B(), It, Lt, {
+    position: [f, d]
+  }], Ue = () => ["no-repeat", {
     repeat: ["", "x", "y", "space", "round"]
-  }], a = () => ["auto", "cover", "contain", Gr, Or, {
-    size: [m, f]
-  }], x = () => [ft, Ze, je], w = () => [
+  }], a = () => ["auto", "cover", "contain", Wr, Gr, {
+    size: [f, d]
+  }], x = () => [ft, et, Oe], v = () => [
     // Deprecated since Tailwind CSS v4.0.0
     "",
     "none",
     "full",
     g,
-    m,
-    f
-  ], y = () => ["", T, Ze, je], $ = () => ["solid", "dashed", "dotted", "double"], be = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"], v = () => [T, ft, It, Lt], ae = () => [
+    f,
+    d
+  ], R = () => ["", T, et, Oe], Y = () => ["solid", "dashed", "dotted", "double"], ie = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"], w = () => [T, ft, It, Lt], le = () => [
     // Deprecated since Tailwind CSS v4.0.0
     "",
     "none",
-    Q,
-    m,
-    f
-  ], ee = () => ["none", T, m, f], ge = () => ["none", T, m, f], te = () => [T, m, f], Oe = () => [Ge, "full", ...h()];
+    O,
+    f,
+    d
+  ], ce = () => ["none", T, f, d], ue = () => ["none", T, f, d], ze = () => [T, f, d], W = () => [Ve, "full", ...h()];
   return {
     cacheSize: 500,
     theme: {
       animate: ["spin", "ping", "pulse", "bounce"],
       aspect: ["video"],
-      blur: [Ae],
-      breakpoint: [Ae],
-      color: [Ir],
-      container: [Ae],
-      "drop-shadow": [Ae],
+      blur: [Ee],
+      breakpoint: [Ee],
+      color: [zr],
+      container: [Ee],
+      "drop-shadow": [Ee],
       ease: ["in", "out", "in-out"],
-      font: [jr],
+      font: [Xr],
       "font-weight": ["thin", "extralight", "light", "normal", "medium", "semibold", "bold", "extrabold", "black"],
-      "inset-shadow": [Ae],
+      "inset-shadow": [Ee],
       leading: ["none", "tight", "snug", "normal", "relaxed", "loose"],
       perspective: ["dramatic", "near", "normal", "midrange", "distant", "none"],
-      radius: [Ae],
-      shadow: [Ae],
+      radius: [Ee],
+      shadow: [Ee],
       spacing: ["px", T],
-      text: [Ae],
-      "text-shadow": [Ae],
+      text: [Ee],
+      "text-shadow": [Ee],
       tracking: ["tighter", "tight", "normal", "wide", "wider", "widest"]
     },
     classGroups: {
@@ -632,7 +632,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/aspect-ratio
        */
       aspect: [{
-        aspect: ["auto", "square", Ge, f, m, N]
+        aspect: ["auto", "square", Ve, d, f, C]
       }],
       /**
        * Container
@@ -645,21 +645,21 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/columns
        */
       columns: [{
-        columns: [T, f, m, b]
+        columns: [T, d, f, b]
       }],
       /**
        * Break After
        * @see https://tailwindcss.com/docs/break-after
        */
       "break-after": [{
-        "break-after": V()
+        "break-after": te()
       }],
       /**
        * Break Before
        * @see https://tailwindcss.com/docs/break-before
        */
       "break-before": [{
-        "break-before": V()
+        "break-before": te()
       }],
       /**
        * Break Inside
@@ -723,49 +723,49 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/object-position
        */
       "object-position": [{
-        object: Y()
+        object: se()
       }],
       /**
        * Overflow
        * @see https://tailwindcss.com/docs/overflow
        */
       overflow: [{
-        overflow: oe()
+        overflow: X()
       }],
       /**
        * Overflow X
        * @see https://tailwindcss.com/docs/overflow
        */
       "overflow-x": [{
-        "overflow-x": oe()
+        "overflow-x": X()
       }],
       /**
        * Overflow Y
        * @see https://tailwindcss.com/docs/overflow
        */
       "overflow-y": [{
-        "overflow-y": oe()
+        "overflow-y": X()
       }],
       /**
        * Overscroll Behavior
        * @see https://tailwindcss.com/docs/overscroll-behavior
        */
       overscroll: [{
-        overscroll: pe()
+        overscroll: ge()
       }],
       /**
        * Overscroll Behavior X
        * @see https://tailwindcss.com/docs/overscroll-behavior
        */
       "overscroll-x": [{
-        "overscroll-x": pe()
+        "overscroll-x": ge()
       }],
       /**
        * Overscroll Behavior Y
        * @see https://tailwindcss.com/docs/overscroll-behavior
        */
       "overscroll-y": [{
-        "overscroll-y": pe()
+        "overscroll-y": ge()
       }],
       /**
        * Position
@@ -845,7 +845,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/z-index
        */
       z: [{
-        z: [Ie, "auto", m, f]
+        z: [Fe, "auto", f, d]
       }],
       // ------------------------
       // --- Flexbox and Grid ---
@@ -855,7 +855,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/flex-basis
        */
       basis: [{
-        basis: [Ge, "full", "auto", b, ...h()]
+        basis: [Ve, "full", "auto", b, ...h()]
       }],
       /**
        * Flex Direction
@@ -876,84 +876,84 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/flex
        */
       flex: [{
-        flex: [T, Ge, "auto", "initial", "none", f]
+        flex: [T, Ve, "auto", "initial", "none", d]
       }],
       /**
        * Flex Grow
        * @see https://tailwindcss.com/docs/flex-grow
        */
       grow: [{
-        grow: ["", T, m, f]
+        grow: ["", T, f, d]
       }],
       /**
        * Flex Shrink
        * @see https://tailwindcss.com/docs/flex-shrink
        */
       shrink: [{
-        shrink: ["", T, m, f]
+        shrink: ["", T, f, d]
       }],
       /**
        * Order
        * @see https://tailwindcss.com/docs/order
        */
       order: [{
-        order: [Ie, "first", "last", "none", m, f]
+        order: [Fe, "first", "last", "none", f, d]
       }],
       /**
        * Grid Template Columns
        * @see https://tailwindcss.com/docs/grid-template-columns
        */
       "grid-cols": [{
-        "grid-cols": K()
+        "grid-cols": Le()
       }],
       /**
        * Grid Column Start / End
        * @see https://tailwindcss.com/docs/grid-column
        */
       "col-start-end": [{
-        col: ke()
+        col: Z()
       }],
       /**
        * Grid Column Start
        * @see https://tailwindcss.com/docs/grid-column
        */
       "col-start": [{
-        "col-start": B()
+        "col-start": K()
       }],
       /**
        * Grid Column End
        * @see https://tailwindcss.com/docs/grid-column
        */
       "col-end": [{
-        "col-end": B()
+        "col-end": K()
       }],
       /**
        * Grid Template Rows
        * @see https://tailwindcss.com/docs/grid-template-rows
        */
       "grid-rows": [{
-        "grid-rows": K()
+        "grid-rows": Le()
       }],
       /**
        * Grid Row Start / End
        * @see https://tailwindcss.com/docs/grid-row
        */
       "row-start-end": [{
-        row: ke()
+        row: Z()
       }],
       /**
        * Grid Row Start
        * @see https://tailwindcss.com/docs/grid-row
        */
       "row-start": [{
-        "row-start": B()
+        "row-start": K()
       }],
       /**
        * Grid Row End
        * @see https://tailwindcss.com/docs/grid-row
        */
       "row-end": [{
-        "row-end": B()
+        "row-end": K()
       }],
       /**
        * Grid Auto Flow
@@ -967,14 +967,14 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/grid-auto-columns
        */
       "auto-cols": [{
-        "auto-cols": Fe()
+        "auto-cols": re()
       }],
       /**
        * Grid Auto Rows
        * @see https://tailwindcss.com/docs/grid-auto-rows
        */
       "auto-rows": [{
-        "auto-rows": Fe()
+        "auto-rows": re()
       }],
       /**
        * Gap
@@ -1002,35 +1002,35 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/justify-content
        */
       "justify-content": [{
-        justify: [...j(), "normal"]
+        justify: [...Ie(), "normal"]
       }],
       /**
        * Justify Items
        * @see https://tailwindcss.com/docs/justify-items
        */
       "justify-items": [{
-        "justify-items": [...ne(), "normal"]
+        "justify-items": [...N(), "normal"]
       }],
       /**
        * Justify Self
        * @see https://tailwindcss.com/docs/justify-self
        */
       "justify-self": [{
-        "justify-self": ["auto", ...ne()]
+        "justify-self": ["auto", ...N()]
       }],
       /**
        * Align Content
        * @see https://tailwindcss.com/docs/align-content
        */
       "align-content": [{
-        content: ["normal", ...j()]
+        content: ["normal", ...Ie()]
       }],
       /**
        * Align Items
        * @see https://tailwindcss.com/docs/align-items
        */
       "align-items": [{
-        items: [...ne(), {
+        items: [...N(), {
           baseline: ["", "last"]
         }]
       }],
@@ -1039,7 +1039,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/align-self
        */
       "align-self": [{
-        self: ["auto", ...ne(), {
+        self: ["auto", ...N(), {
           baseline: ["", "last"]
         }]
       }],
@@ -1048,21 +1048,21 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/place-content
        */
       "place-content": [{
-        "place-content": j()
+        "place-content": Ie()
       }],
       /**
        * Place Items
        * @see https://tailwindcss.com/docs/place-items
        */
       "place-items": [{
-        "place-items": [...ne(), "baseline"]
+        "place-items": [...N(), "baseline"]
       }],
       /**
        * Place Self
        * @see https://tailwindcss.com/docs/place-self
        */
       "place-self": [{
-        "place-self": ["auto", ...ne()]
+        "place-self": ["auto", ...N()]
       }],
       // Spacing
       /**
@@ -1133,63 +1133,63 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/margin
        */
       m: [{
-        m: X()
+        m: V()
       }],
       /**
        * Margin X
        * @see https://tailwindcss.com/docs/margin
        */
       mx: [{
-        mx: X()
+        mx: V()
       }],
       /**
        * Margin Y
        * @see https://tailwindcss.com/docs/margin
        */
       my: [{
-        my: X()
+        my: V()
       }],
       /**
        * Margin Start
        * @see https://tailwindcss.com/docs/margin
        */
       ms: [{
-        ms: X()
+        ms: V()
       }],
       /**
        * Margin End
        * @see https://tailwindcss.com/docs/margin
        */
       me: [{
-        me: X()
+        me: V()
       }],
       /**
        * Margin Top
        * @see https://tailwindcss.com/docs/margin
        */
       mt: [{
-        mt: X()
+        mt: V()
       }],
       /**
        * Margin Right
        * @see https://tailwindcss.com/docs/margin
        */
       mr: [{
-        mr: X()
+        mr: V()
       }],
       /**
        * Margin Bottom
        * @see https://tailwindcss.com/docs/margin
        */
       mb: [{
-        mb: X()
+        mb: V()
       }],
       /**
        * Margin Left
        * @see https://tailwindcss.com/docs/margin
        */
       ml: [{
-        ml: X()
+        ml: V()
       }],
       /**
        * Space Between X
@@ -1223,14 +1223,14 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/width#setting-both-width-and-height
        */
       size: [{
-        size: W()
+        size: ee()
       }],
       /**
        * Width
        * @see https://tailwindcss.com/docs/width
        */
       w: [{
-        w: [b, "screen", ...W()]
+        w: [b, "screen", ...ee()]
       }],
       /**
        * Min-Width
@@ -1242,7 +1242,7 @@ const ir = (t, n) => {
           "screen",
           /** Deprecated. @see https://github.com/tailwindlabs/tailwindcss.com/issues/2027#issuecomment-2620152757 */
           "none",
-          ...W()
+          ...ee()
         ]
       }],
       /**
@@ -1260,7 +1260,7 @@ const ir = (t, n) => {
           {
             screen: [u]
           },
-          ...W()
+          ...ee()
         ]
       }],
       /**
@@ -1268,21 +1268,21 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/height
        */
       h: [{
-        h: ["screen", "lh", ...W()]
+        h: ["screen", "lh", ...ee()]
       }],
       /**
        * Min-Height
        * @see https://tailwindcss.com/docs/min-height
        */
       "min-h": [{
-        "min-h": ["screen", "lh", "none", ...W()]
+        "min-h": ["screen", "lh", "none", ...ee()]
       }],
       /**
        * Max-Height
        * @see https://tailwindcss.com/docs/max-height
        */
       "max-h": [{
-        "max-h": ["screen", "lh", ...W()]
+        "max-h": ["screen", "lh", ...ee()]
       }],
       // ------------------
       // --- Typography ---
@@ -1292,7 +1292,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/font-size
        */
       "font-size": [{
-        text: ["base", o, Ze, je]
+        text: ["base", o, et, Oe]
       }],
       /**
        * Font Smoothing
@@ -1309,21 +1309,21 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/font-weight
        */
       "font-weight": [{
-        font: [r, m, mt]
+        font: [r, f, mt]
       }],
       /**
        * Font Stretch
        * @see https://tailwindcss.com/docs/font-stretch
        */
       "font-stretch": [{
-        "font-stretch": ["ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded", ft, f]
+        "font-stretch": ["ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded", ft, d]
       }],
       /**
        * Font Family
        * @see https://tailwindcss.com/docs/font-family
        */
       "font-family": [{
-        font: [Xr, f, n]
+        font: [Yr, d, n]
       }],
       /**
        * Font Variant Numeric
@@ -1360,14 +1360,14 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/letter-spacing
        */
       tracking: [{
-        tracking: [l, m, f]
+        tracking: [i, f, d]
       }],
       /**
        * Line Clamp
        * @see https://tailwindcss.com/docs/line-clamp
        */
       "line-clamp": [{
-        "line-clamp": [T, "none", m, mt]
+        "line-clamp": [T, "none", f, mt]
       }],
       /**
        * Line Height
@@ -1385,7 +1385,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/list-style-image
        */
       "list-image": [{
-        "list-image": ["none", m, f]
+        "list-image": ["none", f, d]
       }],
       /**
        * List Style Position
@@ -1399,7 +1399,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/list-style-type
        */
       "list-style-type": [{
-        list: ["disc", "decimal", "none", m, f]
+        list: ["disc", "decimal", "none", f, d]
       }],
       /**
        * Text Alignment
@@ -1433,14 +1433,14 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/text-decoration-style
        */
       "text-decoration-style": [{
-        decoration: [...$(), "wavy"]
+        decoration: [...Y(), "wavy"]
       }],
       /**
        * Text Decoration Thickness
        * @see https://tailwindcss.com/docs/text-decoration-thickness
        */
       "text-decoration-thickness": [{
-        decoration: [T, "from-font", "auto", m, je]
+        decoration: [T, "from-font", "auto", f, Oe]
       }],
       /**
        * Text Decoration Color
@@ -1454,7 +1454,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/text-underline-offset
        */
       "underline-offset": [{
-        "underline-offset": [T, "auto", m, f]
+        "underline-offset": [T, "auto", f, d]
       }],
       /**
        * Text Transform
@@ -1485,7 +1485,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/vertical-align
        */
       "vertical-align": [{
-        align: ["baseline", "top", "middle", "bottom", "text-top", "text-bottom", "sub", "super", m, f]
+        align: ["baseline", "top", "middle", "bottom", "text-top", "text-bottom", "sub", "super", f, d]
       }],
       /**
        * Whitespace
@@ -1520,7 +1520,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/content
        */
       content: [{
-        content: ["none", m, f]
+        content: ["none", f, d]
       }],
       // -------------------
       // --- Backgrounds ---
@@ -1551,14 +1551,14 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/background-position
        */
       "bg-position": [{
-        bg: Ue()
+        bg: _e()
       }],
       /**
        * Background Repeat
        * @see https://tailwindcss.com/docs/background-repeat
        */
       "bg-repeat": [{
-        bg: Ee()
+        bg: Ue()
       }],
       /**
        * Background Size
@@ -1575,10 +1575,10 @@ const ir = (t, n) => {
         bg: ["none", {
           linear: [{
             to: ["t", "tr", "r", "br", "b", "bl", "l", "tl"]
-          }, Ie, m, f],
-          radial: ["", m, f],
-          conic: [Ie, m, f]
-        }, Vr, Br]
+          }, Fe, f, d],
+          radial: ["", f, d],
+          conic: [Fe, f, d]
+        }, $r, Vr]
       }],
       /**
        * Background Color
@@ -1637,175 +1637,175 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/border-radius
        */
       rounded: [{
-        rounded: w()
+        rounded: v()
       }],
       /**
        * Border Radius Start
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-s": [{
-        "rounded-s": w()
+        "rounded-s": v()
       }],
       /**
        * Border Radius End
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-e": [{
-        "rounded-e": w()
+        "rounded-e": v()
       }],
       /**
        * Border Radius Top
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-t": [{
-        "rounded-t": w()
+        "rounded-t": v()
       }],
       /**
        * Border Radius Right
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-r": [{
-        "rounded-r": w()
+        "rounded-r": v()
       }],
       /**
        * Border Radius Bottom
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-b": [{
-        "rounded-b": w()
+        "rounded-b": v()
       }],
       /**
        * Border Radius Left
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-l": [{
-        "rounded-l": w()
+        "rounded-l": v()
       }],
       /**
        * Border Radius Start Start
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-ss": [{
-        "rounded-ss": w()
+        "rounded-ss": v()
       }],
       /**
        * Border Radius Start End
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-se": [{
-        "rounded-se": w()
+        "rounded-se": v()
       }],
       /**
        * Border Radius End End
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-ee": [{
-        "rounded-ee": w()
+        "rounded-ee": v()
       }],
       /**
        * Border Radius End Start
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-es": [{
-        "rounded-es": w()
+        "rounded-es": v()
       }],
       /**
        * Border Radius Top Left
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-tl": [{
-        "rounded-tl": w()
+        "rounded-tl": v()
       }],
       /**
        * Border Radius Top Right
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-tr": [{
-        "rounded-tr": w()
+        "rounded-tr": v()
       }],
       /**
        * Border Radius Bottom Right
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-br": [{
-        "rounded-br": w()
+        "rounded-br": v()
       }],
       /**
        * Border Radius Bottom Left
        * @see https://tailwindcss.com/docs/border-radius
        */
       "rounded-bl": [{
-        "rounded-bl": w()
+        "rounded-bl": v()
       }],
       /**
        * Border Width
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w": [{
-        border: y()
+        border: R()
       }],
       /**
        * Border Width X
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-x": [{
-        "border-x": y()
+        "border-x": R()
       }],
       /**
        * Border Width Y
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-y": [{
-        "border-y": y()
+        "border-y": R()
       }],
       /**
        * Border Width Start
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-s": [{
-        "border-s": y()
+        "border-s": R()
       }],
       /**
        * Border Width End
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-e": [{
-        "border-e": y()
+        "border-e": R()
       }],
       /**
        * Border Width Top
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-t": [{
-        "border-t": y()
+        "border-t": R()
       }],
       /**
        * Border Width Right
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-r": [{
-        "border-r": y()
+        "border-r": R()
       }],
       /**
        * Border Width Bottom
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-b": [{
-        "border-b": y()
+        "border-b": R()
       }],
       /**
        * Border Width Left
        * @see https://tailwindcss.com/docs/border-width
        */
       "border-w-l": [{
-        "border-l": y()
+        "border-l": R()
       }],
       /**
        * Divide Width X
        * @see https://tailwindcss.com/docs/border-width#between-children
        */
       "divide-x": [{
-        "divide-x": y()
+        "divide-x": R()
       }],
       /**
        * Divide Width X Reverse
@@ -1817,7 +1817,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/border-width#between-children
        */
       "divide-y": [{
-        "divide-y": y()
+        "divide-y": R()
       }],
       /**
        * Divide Width Y Reverse
@@ -1829,14 +1829,14 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/border-style
        */
       "border-style": [{
-        border: [...$(), "hidden", "none"]
+        border: [...Y(), "hidden", "none"]
       }],
       /**
        * Divide Style
        * @see https://tailwindcss.com/docs/border-style#setting-the-divider-style
        */
       "divide-style": [{
-        divide: [...$(), "hidden", "none"]
+        divide: [...Y(), "hidden", "none"]
       }],
       /**
        * Border Color
@@ -1913,21 +1913,21 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/outline-style
        */
       "outline-style": [{
-        outline: [...$(), "none", "hidden"]
+        outline: [...Y(), "none", "hidden"]
       }],
       /**
        * Outline Offset
        * @see https://tailwindcss.com/docs/outline-offset
        */
       "outline-offset": [{
-        "outline-offset": [T, m, f]
+        "outline-offset": [T, f, d]
       }],
       /**
        * Outline Width
        * @see https://tailwindcss.com/docs/outline-width
        */
       "outline-w": [{
-        outline: ["", T, Ze, je]
+        outline: ["", T, et, Oe]
       }],
       /**
        * Outline Color
@@ -1948,9 +1948,9 @@ const ir = (t, n) => {
           // Deprecated since Tailwind CSS v4.0.0
           "",
           "none",
-          S,
-          nt,
-          ot
+          y,
+          st,
+          at
         ]
       }],
       /**
@@ -1965,7 +1965,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/box-shadow#adding-an-inset-shadow
        */
       "inset-shadow": [{
-        "inset-shadow": ["none", D, nt, ot]
+        "inset-shadow": ["none", M, st, at]
       }],
       /**
        * Inset Box Shadow Color
@@ -1979,7 +1979,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/box-shadow#adding-a-ring
        */
       "ring-w": [{
-        ring: y()
+        ring: R()
       }],
       /**
        * Ring Width Inset
@@ -2002,7 +2002,7 @@ const ir = (t, n) => {
        * @see https://github.com/tailwindlabs/tailwindcss/blob/v4.0.0/packages/tailwindcss/src/utilities.ts#L4158
        */
       "ring-offset-w": [{
-        "ring-offset": [T, je]
+        "ring-offset": [T, Oe]
       }],
       /**
        * Ring Offset Color
@@ -2018,7 +2018,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/box-shadow#adding-an-inset-ring
        */
       "inset-ring-w": [{
-        "inset-ring": y()
+        "inset-ring": R()
       }],
       /**
        * Inset Ring Color
@@ -2032,7 +2032,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/text-shadow
        */
       "text-shadow": [{
-        "text-shadow": ["none", A, nt, ot]
+        "text-shadow": ["none", D, st, at]
       }],
       /**
        * Text Shadow Color
@@ -2046,21 +2046,21 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/opacity
        */
       opacity: [{
-        opacity: [T, m, f]
+        opacity: [T, f, d]
       }],
       /**
        * Mix Blend Mode
        * @see https://tailwindcss.com/docs/mix-blend-mode
        */
       "mix-blend": [{
-        "mix-blend": [...be(), "plus-darker", "plus-lighter"]
+        "mix-blend": [...ie(), "plus-darker", "plus-lighter"]
       }],
       /**
        * Background Blend Mode
        * @see https://tailwindcss.com/docs/background-blend-mode
        */
       "bg-blend": [{
-        "bg-blend": be()
+        "bg-blend": ie()
       }],
       /**
        * Mask Clip
@@ -2084,10 +2084,10 @@ const ir = (t, n) => {
         "mask-linear": [T]
       }],
       "mask-image-linear-from-pos": [{
-        "mask-linear-from": v()
+        "mask-linear-from": w()
       }],
       "mask-image-linear-to-pos": [{
-        "mask-linear-to": v()
+        "mask-linear-to": w()
       }],
       "mask-image-linear-from-color": [{
         "mask-linear-from": p()
@@ -2096,10 +2096,10 @@ const ir = (t, n) => {
         "mask-linear-to": p()
       }],
       "mask-image-t-from-pos": [{
-        "mask-t-from": v()
+        "mask-t-from": w()
       }],
       "mask-image-t-to-pos": [{
-        "mask-t-to": v()
+        "mask-t-to": w()
       }],
       "mask-image-t-from-color": [{
         "mask-t-from": p()
@@ -2108,10 +2108,10 @@ const ir = (t, n) => {
         "mask-t-to": p()
       }],
       "mask-image-r-from-pos": [{
-        "mask-r-from": v()
+        "mask-r-from": w()
       }],
       "mask-image-r-to-pos": [{
-        "mask-r-to": v()
+        "mask-r-to": w()
       }],
       "mask-image-r-from-color": [{
         "mask-r-from": p()
@@ -2120,10 +2120,10 @@ const ir = (t, n) => {
         "mask-r-to": p()
       }],
       "mask-image-b-from-pos": [{
-        "mask-b-from": v()
+        "mask-b-from": w()
       }],
       "mask-image-b-to-pos": [{
-        "mask-b-to": v()
+        "mask-b-to": w()
       }],
       "mask-image-b-from-color": [{
         "mask-b-from": p()
@@ -2132,10 +2132,10 @@ const ir = (t, n) => {
         "mask-b-to": p()
       }],
       "mask-image-l-from-pos": [{
-        "mask-l-from": v()
+        "mask-l-from": w()
       }],
       "mask-image-l-to-pos": [{
-        "mask-l-to": v()
+        "mask-l-to": w()
       }],
       "mask-image-l-from-color": [{
         "mask-l-from": p()
@@ -2144,10 +2144,10 @@ const ir = (t, n) => {
         "mask-l-to": p()
       }],
       "mask-image-x-from-pos": [{
-        "mask-x-from": v()
+        "mask-x-from": w()
       }],
       "mask-image-x-to-pos": [{
-        "mask-x-to": v()
+        "mask-x-to": w()
       }],
       "mask-image-x-from-color": [{
         "mask-x-from": p()
@@ -2156,10 +2156,10 @@ const ir = (t, n) => {
         "mask-x-to": p()
       }],
       "mask-image-y-from-pos": [{
-        "mask-y-from": v()
+        "mask-y-from": w()
       }],
       "mask-image-y-to-pos": [{
-        "mask-y-to": v()
+        "mask-y-to": w()
       }],
       "mask-image-y-from-color": [{
         "mask-y-from": p()
@@ -2168,13 +2168,13 @@ const ir = (t, n) => {
         "mask-y-to": p()
       }],
       "mask-image-radial": [{
-        "mask-radial": [m, f]
+        "mask-radial": [f, d]
       }],
       "mask-image-radial-from-pos": [{
-        "mask-radial-from": v()
+        "mask-radial-from": w()
       }],
       "mask-image-radial-to-pos": [{
-        "mask-radial-to": v()
+        "mask-radial-to": w()
       }],
       "mask-image-radial-from-color": [{
         "mask-radial-from": p()
@@ -2192,16 +2192,16 @@ const ir = (t, n) => {
         }]
       }],
       "mask-image-radial-pos": [{
-        "mask-radial-at": ce()
+        "mask-radial-at": B()
       }],
       "mask-image-conic-pos": [{
         "mask-conic": [T]
       }],
       "mask-image-conic-from-pos": [{
-        "mask-conic-from": v()
+        "mask-conic-from": w()
       }],
       "mask-image-conic-to-pos": [{
-        "mask-conic-to": v()
+        "mask-conic-to": w()
       }],
       "mask-image-conic-from-color": [{
         "mask-conic-from": p()
@@ -2228,14 +2228,14 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/mask-position
        */
       "mask-position": [{
-        mask: Ue()
+        mask: _e()
       }],
       /**
        * Mask Repeat
        * @see https://tailwindcss.com/docs/mask-repeat
        */
       "mask-repeat": [{
-        mask: Ee()
+        mask: Ue()
       }],
       /**
        * Mask Size
@@ -2256,7 +2256,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/mask-image
        */
       "mask-image": [{
-        mask: ["none", m, f]
+        mask: ["none", f, d]
       }],
       // ---------------
       // --- Filters ---
@@ -2270,8 +2270,8 @@ const ir = (t, n) => {
           // Deprecated since Tailwind CSS v3.0.0
           "",
           "none",
-          m,
-          f
+          f,
+          d
         ]
       }],
       /**
@@ -2279,21 +2279,21 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/blur
        */
       blur: [{
-        blur: ae()
+        blur: le()
       }],
       /**
        * Brightness
        * @see https://tailwindcss.com/docs/brightness
        */
       brightness: [{
-        brightness: [T, m, f]
+        brightness: [T, f, d]
       }],
       /**
        * Contrast
        * @see https://tailwindcss.com/docs/contrast
        */
       contrast: [{
-        contrast: [T, m, f]
+        contrast: [T, f, d]
       }],
       /**
        * Drop Shadow
@@ -2304,9 +2304,9 @@ const ir = (t, n) => {
           // Deprecated since Tailwind CSS v4.0.0
           "",
           "none",
-          C,
-          nt,
-          ot
+          I,
+          st,
+          at
         ]
       }],
       /**
@@ -2321,35 +2321,35 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/grayscale
        */
       grayscale: [{
-        grayscale: ["", T, m, f]
+        grayscale: ["", T, f, d]
       }],
       /**
        * Hue Rotate
        * @see https://tailwindcss.com/docs/hue-rotate
        */
       "hue-rotate": [{
-        "hue-rotate": [T, m, f]
+        "hue-rotate": [T, f, d]
       }],
       /**
        * Invert
        * @see https://tailwindcss.com/docs/invert
        */
       invert: [{
-        invert: ["", T, m, f]
+        invert: ["", T, f, d]
       }],
       /**
        * Saturate
        * @see https://tailwindcss.com/docs/saturate
        */
       saturate: [{
-        saturate: [T, m, f]
+        saturate: [T, f, d]
       }],
       /**
        * Sepia
        * @see https://tailwindcss.com/docs/sepia
        */
       sepia: [{
-        sepia: ["", T, m, f]
+        sepia: ["", T, f, d]
       }],
       /**
        * Backdrop Filter
@@ -2360,8 +2360,8 @@ const ir = (t, n) => {
           // Deprecated since Tailwind CSS v3.0.0
           "",
           "none",
-          m,
-          f
+          f,
+          d
         ]
       }],
       /**
@@ -2369,63 +2369,63 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/backdrop-blur
        */
       "backdrop-blur": [{
-        "backdrop-blur": ae()
+        "backdrop-blur": le()
       }],
       /**
        * Backdrop Brightness
        * @see https://tailwindcss.com/docs/backdrop-brightness
        */
       "backdrop-brightness": [{
-        "backdrop-brightness": [T, m, f]
+        "backdrop-brightness": [T, f, d]
       }],
       /**
        * Backdrop Contrast
        * @see https://tailwindcss.com/docs/backdrop-contrast
        */
       "backdrop-contrast": [{
-        "backdrop-contrast": [T, m, f]
+        "backdrop-contrast": [T, f, d]
       }],
       /**
        * Backdrop Grayscale
        * @see https://tailwindcss.com/docs/backdrop-grayscale
        */
       "backdrop-grayscale": [{
-        "backdrop-grayscale": ["", T, m, f]
+        "backdrop-grayscale": ["", T, f, d]
       }],
       /**
        * Backdrop Hue Rotate
        * @see https://tailwindcss.com/docs/backdrop-hue-rotate
        */
       "backdrop-hue-rotate": [{
-        "backdrop-hue-rotate": [T, m, f]
+        "backdrop-hue-rotate": [T, f, d]
       }],
       /**
        * Backdrop Invert
        * @see https://tailwindcss.com/docs/backdrop-invert
        */
       "backdrop-invert": [{
-        "backdrop-invert": ["", T, m, f]
+        "backdrop-invert": ["", T, f, d]
       }],
       /**
        * Backdrop Opacity
        * @see https://tailwindcss.com/docs/backdrop-opacity
        */
       "backdrop-opacity": [{
-        "backdrop-opacity": [T, m, f]
+        "backdrop-opacity": [T, f, d]
       }],
       /**
        * Backdrop Saturate
        * @see https://tailwindcss.com/docs/backdrop-saturate
        */
       "backdrop-saturate": [{
-        "backdrop-saturate": [T, m, f]
+        "backdrop-saturate": [T, f, d]
       }],
       /**
        * Backdrop Sepia
        * @see https://tailwindcss.com/docs/backdrop-sepia
        */
       "backdrop-sepia": [{
-        "backdrop-sepia": ["", T, m, f]
+        "backdrop-sepia": ["", T, f, d]
       }],
       // --------------
       // --- Tables ---
@@ -2480,7 +2480,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/transition-property
        */
       transition: [{
-        transition: ["", "all", "colors", "opacity", "shadow", "transform", "none", m, f]
+        transition: ["", "all", "colors", "opacity", "shadow", "transform", "none", f, d]
       }],
       /**
        * Transition Behavior
@@ -2494,28 +2494,28 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/transition-duration
        */
       duration: [{
-        duration: [T, "initial", m, f]
+        duration: [T, "initial", f, d]
       }],
       /**
        * Transition Timing Function
        * @see https://tailwindcss.com/docs/transition-timing-function
        */
       ease: [{
-        ease: ["linear", "initial", Z, m, f]
+        ease: ["linear", "initial", ae, f, d]
       }],
       /**
        * Transition Delay
        * @see https://tailwindcss.com/docs/transition-delay
        */
       delay: [{
-        delay: [T, m, f]
+        delay: [T, f, d]
       }],
       /**
        * Animation
        * @see https://tailwindcss.com/docs/animation
        */
       animate: [{
-        animate: ["none", le, m, f]
+        animate: ["none", be, f, d]
       }],
       // ------------------
       // --- Transforms ---
@@ -2532,70 +2532,70 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/perspective
        */
       perspective: [{
-        perspective: [F, m, f]
+        perspective: [U, f, d]
       }],
       /**
        * Perspective Origin
        * @see https://tailwindcss.com/docs/perspective-origin
        */
       "perspective-origin": [{
-        "perspective-origin": Y()
+        "perspective-origin": se()
       }],
       /**
        * Rotate
        * @see https://tailwindcss.com/docs/rotate
        */
       rotate: [{
-        rotate: ee()
+        rotate: ce()
       }],
       /**
        * Rotate X
        * @see https://tailwindcss.com/docs/rotate
        */
       "rotate-x": [{
-        "rotate-x": ee()
+        "rotate-x": ce()
       }],
       /**
        * Rotate Y
        * @see https://tailwindcss.com/docs/rotate
        */
       "rotate-y": [{
-        "rotate-y": ee()
+        "rotate-y": ce()
       }],
       /**
        * Rotate Z
        * @see https://tailwindcss.com/docs/rotate
        */
       "rotate-z": [{
-        "rotate-z": ee()
+        "rotate-z": ce()
       }],
       /**
        * Scale
        * @see https://tailwindcss.com/docs/scale
        */
       scale: [{
-        scale: ge()
+        scale: ue()
       }],
       /**
        * Scale X
        * @see https://tailwindcss.com/docs/scale
        */
       "scale-x": [{
-        "scale-x": ge()
+        "scale-x": ue()
       }],
       /**
        * Scale Y
        * @see https://tailwindcss.com/docs/scale
        */
       "scale-y": [{
-        "scale-y": ge()
+        "scale-y": ue()
       }],
       /**
        * Scale Z
        * @see https://tailwindcss.com/docs/scale
        */
       "scale-z": [{
-        "scale-z": ge()
+        "scale-z": ue()
       }],
       /**
        * Scale 3D
@@ -2607,35 +2607,35 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/skew
        */
       skew: [{
-        skew: te()
+        skew: ze()
       }],
       /**
        * Skew X
        * @see https://tailwindcss.com/docs/skew
        */
       "skew-x": [{
-        "skew-x": te()
+        "skew-x": ze()
       }],
       /**
        * Skew Y
        * @see https://tailwindcss.com/docs/skew
        */
       "skew-y": [{
-        "skew-y": te()
+        "skew-y": ze()
       }],
       /**
        * Transform
        * @see https://tailwindcss.com/docs/transform
        */
       transform: [{
-        transform: [m, f, "", "none", "gpu", "cpu"]
+        transform: [f, d, "", "none", "gpu", "cpu"]
       }],
       /**
        * Transform Origin
        * @see https://tailwindcss.com/docs/transform-origin
        */
       "transform-origin": [{
-        origin: Y()
+        origin: se()
       }],
       /**
        * Transform Style
@@ -2649,28 +2649,28 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/translate
        */
       translate: [{
-        translate: Oe()
+        translate: W()
       }],
       /**
        * Translate X
        * @see https://tailwindcss.com/docs/translate
        */
       "translate-x": [{
-        "translate-x": Oe()
+        "translate-x": W()
       }],
       /**
        * Translate Y
        * @see https://tailwindcss.com/docs/translate
        */
       "translate-y": [{
-        "translate-y": Oe()
+        "translate-y": W()
       }],
       /**
        * Translate Z
        * @see https://tailwindcss.com/docs/translate
        */
       "translate-z": [{
-        "translate-z": Oe()
+        "translate-z": W()
       }],
       /**
        * Translate None
@@ -2713,7 +2713,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/cursor
        */
       cursor: [{
-        cursor: ["auto", "default", "pointer", "wait", "text", "move", "help", "not-allowed", "none", "context-menu", "progress", "cell", "crosshair", "vertical-text", "alias", "copy", "no-drop", "grab", "grabbing", "all-scroll", "col-resize", "row-resize", "n-resize", "e-resize", "s-resize", "w-resize", "ne-resize", "nw-resize", "se-resize", "sw-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "zoom-in", "zoom-out", m, f]
+        cursor: ["auto", "default", "pointer", "wait", "text", "move", "help", "not-allowed", "none", "context-menu", "progress", "cell", "crosshair", "vertical-text", "alias", "copy", "no-drop", "grab", "grabbing", "all-scroll", "col-resize", "row-resize", "n-resize", "e-resize", "s-resize", "w-resize", "ne-resize", "nw-resize", "se-resize", "sw-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "zoom-in", "zoom-out", f, d]
       }],
       /**
        * Field Sizing
@@ -2935,7 +2935,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/will-change
        */
       "will-change": [{
-        "will-change": ["auto", "scroll", "contents", "transform", m, f]
+        "will-change": ["auto", "scroll", "contents", "transform", f, d]
       }],
       // -----------
       // --- SVG ---
@@ -2952,7 +2952,7 @@ const ir = (t, n) => {
        * @see https://tailwindcss.com/docs/stroke-width
        */
       "stroke-w": [{
-        stroke: [T, Ze, je, mt]
+        stroke: [T, et, Oe, mt]
       }],
       /**
        * Stroke
@@ -3027,25 +3027,25 @@ const ir = (t, n) => {
     },
     orderSensitiveModifiers: ["*", "**", "after", "backdrop", "before", "details-content", "file", "first-letter", "first-line", "marker", "placeholder", "selection"]
   };
-}, qr = /* @__PURE__ */ Sr($r);
-function Ft(...t) {
-  return qr(sr(t));
+}, Qr = /* @__PURE__ */ Mr(Jr);
+function Ut(...t) {
+  return Qr(cr(t));
 }
-function Ut(t, n, o) {
+function zt(t, n, o) {
   const r = t.createShader(n);
   return r ? (t.shaderSource(r, o), t.compileShader(r), t.getShaderParameter(r, t.COMPILE_STATUS) ? r : (console.error("Shader compile error:", t.getShaderInfoLog(r)), t.deleteShader(r), null)) : null;
 }
 function pt(t, n, o) {
-  const r = Ut(t, t.VERTEX_SHADER, n), l = Ut(t, t.FRAGMENT_SHADER, o);
-  if (!r || !l) return null;
+  const r = zt(t, t.VERTEX_SHADER, n), i = zt(t, t.FRAGMENT_SHADER, o);
+  if (!r || !i) return null;
   const c = t.createProgram();
-  return c ? (t.attachShader(c, r), t.attachShader(c, l), t.linkProgram(c), t.getProgramParameter(c, t.LINK_STATUS) ? c : (console.error("Program link error:", t.getProgramInfoLog(c)), t.deleteProgram(c), null)) : null;
+  return c ? (t.attachShader(c, r), t.attachShader(c, i), t.linkProgram(c), t.getProgramParameter(c, t.LINK_STATUS) ? c : (console.error("Program link error:", t.getProgramInfoLog(c)), t.deleteProgram(c), null)) : null;
 }
-function Hr(t) {
+function Zr(t) {
   const n = t.clientWidth * window.devicePixelRatio, o = t.clientHeight * window.devicePixelRatio;
   return t.width !== n || t.height !== o ? (t.width = n, t.height = o, !0) : !1;
 }
-const Jr = `#version 300 es
+const Kr = `#version 300 es
 uniform sampler2D u_data; // Nx1 texture
 uniform float u_bins;
 uniform float u_minDb;
@@ -3078,7 +3078,7 @@ void main() {
 
   gl_Position = vec4(x, y, 0.0, 1.0);
 }
-`, Qr = `#version 300 es
+`, eo = `#version 300 es
 precision mediump float;
 in float v_yNorm;
 out vec4 outColor;
@@ -3090,7 +3090,7 @@ void main() {
   
   outColor = mix(colorBottom, colorTop, v_yNorm);
 }
-`, Zr = `#version 300 es
+`, to = `#version 300 es
 uniform sampler2D u_data;
 uniform float u_bins;
 uniform float u_minDb;
@@ -3107,7 +3107,7 @@ void main() {
 
   gl_Position = vec4(x, y, 0.0, 1.0);
 }
-`, Kr = Zr, eo = `#version 300 es
+`, ro = to, oo = `#version 300 es
 precision mediump float;
 uniform vec4 u_color;
 out vec4 outColor;
@@ -3115,7 +3115,7 @@ out vec4 outColor;
 void main() {
   outColor = vec4(1.0, 1.0, 1.0, 1.0); // Pure White Line
 }
-`, to = `#version 300 es
+`, no = `#version 300 es
 in vec2 a_position; // quad vertices -1..1
 in vec2 a_texCoord; // 0..1
 
@@ -3125,7 +3125,7 @@ void main() {
   gl_Position = vec4(a_position, 0.0, 1.0);
   v_texCoord = a_texCoord;
 }
-`, ro = `#version 300 es
+`, ao = `#version 300 es
 precision mediump float;
 
 in vec2 v_texCoord;
@@ -3159,75 +3159,76 @@ function bt(t = "turbo") {
   const r = o.createLinearGradient(0, 0, 256, 0);
   switch (t) {
     case "viridis":
-      M(r, 0, "#440154"), M(r, 0.25, "#3b528b"), M(r, 0.5, "#21918c"), M(r, 0.75, "#5ec962"), M(r, 1, "#fde725");
+      A(r, 0, "#440154"), A(r, 0.25, "#3b528b"), A(r, 0.5, "#21918c"), A(r, 0.75, "#5ec962"), A(r, 1, "#fde725");
       break;
     case "inferno":
-      M(r, 0, "#000004"), M(r, 0.25, "#420a68"), M(r, 0.5, "#932667"), M(r, 0.75, "#dd513a"), M(r, 1, "#fcffa4");
+      A(r, 0, "#000004"), A(r, 0.25, "#420a68"), A(r, 0.5, "#932667"), A(r, 0.75, "#dd513a"), A(r, 1, "#fcffa4");
       break;
     case "magma":
-      M(r, 0, "#000004"), M(r, 0.25, "#3b0f70"), M(r, 0.5, "#8c2981"), M(r, 0.75, "#fe6100"), M(r, 1, "#fcfdbf");
+      A(r, 0, "#000004"), A(r, 0.25, "#3b0f70"), A(r, 0.5, "#8c2981"), A(r, 0.75, "#fe6100"), A(r, 1, "#fcfdbf");
       break;
     case "grayscale":
-      M(r, 0, "#000000"), M(r, 1, "#ffffff");
+      A(r, 0, "#000000"), A(r, 1, "#ffffff");
       break;
     default:
-      M(r, 0, "#30123b"), M(r, 0.1, "#466be3"), M(r, 0.25, "#28bceb"), M(r, 0.45, "#32f298"), M(r, 0.65, "#a4fc3c"), M(r, 0.85, "#eecf3a"), M(r, 0.95, "#fb7e21"), M(r, 1, "#7a0403");
+      A(r, 0, "#30123b"), A(r, 0.1, "#466be3"), A(r, 0.25, "#28bceb"), A(r, 0.45, "#32f298"), A(r, 0.65, "#a4fc3c"), A(r, 0.85, "#eecf3a"), A(r, 0.95, "#fb7e21"), A(r, 1, "#7a0403");
       break;
   }
   o.fillStyle = r, o.fillRect(0, 0, 256, 1);
-  const l = o.getImageData(0, 0, 256, 1);
-  return new Uint8Array(l.data.buffer);
+  const i = o.getImageData(0, 0, 256, 1);
+  return new Uint8Array(i.data.buffer);
 }
-function M(t, n, o) {
+function A(t, n, o) {
   t.addColorStop(n, o);
 }
-function oo(t, n, o) {
-  return jt(() => {
-    const r = t - n / 2, l = t + n / 2, c = n, u = Math.max(2, Math.floor(o / 100)), b = c / u, d = Math.pow(10, Math.floor(Math.log10(b)));
-    let g = d;
-    b / d > 5 ? g *= 5 : b / d > 2 && (g *= 2);
-    const S = [], D = Math.ceil(r / g) * g;
-    for (let A = D; A <= l; A += g) {
-      const C = (A - r) / c * 100;
-      S.push({
-        val: A,
-        percent: C,
-        label: (A / 1e6).toFixed(3) + "M"
+function so(t, n, o) {
+  return Ot(() => {
+    const r = t - n / 2, i = t + n / 2, c = n, u = Math.max(2, Math.floor(o / 100)), b = c / u, m = Math.pow(10, Math.floor(Math.log10(b)));
+    let g = m;
+    b / m > 5 ? g *= 5 : b / m > 2 && (g *= 2);
+    const y = [], M = Math.ceil(r / g) * g;
+    for (let D = M; D <= i; D += g) {
+      const I = (D - r) / c * 100;
+      y.push({
+        val: D,
+        percent: I,
+        label: (D / 1e6).toFixed(3) + "M"
         // Simple formatting
       });
     }
-    return S;
+    return y;
   }, [t, n, o]);
 }
-function no(t, n, o) {
-  return jt(() => {
-    const r = t - n, l = t, c = Math.max(2, Math.floor(o / 40)), u = n, b = u / c, d = Math.ceil(b / 10) * 10, g = [], S = Math.ceil(r / d) * d;
-    for (let D = S; D <= l; D += d) {
-      const A = (l - D) / u * 100;
-      g.push({ val: D, percent: A });
+function io(t, n, o) {
+  return Ot(() => {
+    const r = t - n, i = t, c = Math.max(2, Math.floor(o / 40)), u = n, b = u / c, m = Math.ceil(b / 10) * 10, g = [], y = Math.ceil(r / m) * m;
+    for (let M = y; M <= i; M += m) {
+      const D = (i - M) / u * 100;
+      g.push({ val: M, percent: D });
     }
     return g;
   }, [t, n, o]);
 }
-const so = ({
+const co = ({
   data: t,
   running: n = !0,
-  refLevel: o = 0,
-  displayRange: r = 80,
-  averaging: l = 0.5,
-  showPeakHold: c = !1,
-  colorMap: u = "turbo",
-  waterfallScaleMode: b = "auto",
-  waterfallFixedMinDb: d,
-  waterfallFixedMaxDb: g,
-  className: S,
+  playbackMode: o = "live",
+  refLevel: r = 0,
+  displayRange: i = 80,
+  averaging: c = 0.5,
+  showPeakHold: u = !1,
+  colorMap: b = "turbo",
+  waterfallScaleMode: m = "auto",
+  waterfallFixedMinDb: g,
+  waterfallFixedMaxDb: y,
+  className: M,
   targetRate: D = 50,
-  jitterBufferMs: A = 200,
-  onRefLevelChange: C,
-  onDisplayRangeChange: Q,
-  onWaterfallFixedRangeChange: F
+  jitterBufferMs: I = 200,
+  onRefLevelChange: O,
+  onDisplayRangeChange: U,
+  onWaterfallFixedRangeChange: C
 }) => {
-  const N = t.length > 0 ? t[t.length - 1] : null, { frequency: Z, bandwidth: le } = N || { frequency: 1e8, bandwidth: 2e6 }, V = J(null), ce = J(null), Y = J(null), oe = J(null), pe = J(bt(u)), h = J(0), z = J({
+  const ae = t.length > 0 ? t[t.length - 1] : null, { frequency: be, bandwidth: te } = ae || { frequency: 1e8, bandwidth: 2e6 }, B = Q(null), se = Q(null), X = Q(null), ge = Q(null), h = Q(bt(b)), z = Q(0), Le = Q({
     w: 0,
     h: 0,
     refLevel: 0,
@@ -3235,11 +3236,11 @@ const so = ({
     minDb: 0,
     maxDb: 0,
     cmapVersion: 0
-  }), [K, ke] = Ne({ min: -120, max: 0 }), [B, Fe] = Ne({ width: 0, height: 0 }), [j, ne] = Ne(0.34), [X, W] = Ne(!1), p = J(0.34);
-  Le(() => {
-    p.current = j;
-  }, [j]);
-  const Ue = oo(Z, le, B.width), Ee = B.height * j, a = no(o, r, Ee), [x, w] = Ne([]), y = J([]), $ = J(/* @__PURE__ */ new Map()), be = J(0), [v, ae] = Ne(!1), [ee, ge] = Ne(null), te = typeof d == "number" && typeof g == "number", Oe = te ? d : K.min, Kt = te ? g : K.max, k = J({
+  }), [Z, K] = Ce({ min: -120, max: 0 }), [re, Ie] = Ce({ width: 0, height: 0 }), [N, V] = Ce(0.34), [ee, p] = Ce(!1), _e = Q(0.34);
+  Ne(() => {
+    _e.current = N;
+  }, [N]);
+  const Ue = so(be, te, re.width), a = re.height * N, x = io(r, i, a), [v, R] = Ce([]), Y = Q([]), ie = Q(/* @__PURE__ */ new Map()), w = Q(0), [le, ce] = Ce(!1), [ue, ze] = Ce(null), W = typeof g == "number" && typeof y == "number", er = W ? g : Z.min, tr = W ? y : Z.max, E = Q({
     // WebGL Resources
     gl: null,
     spectrumVao: null,
@@ -3274,452 +3275,453 @@ const so = ({
     // Props Cache
     props: {
       running: n,
-      refLevel: o,
-      displayRange: r,
-      colorMap: u,
-      averaging: l,
-      showPeakHold: c,
+      playbackMode: o,
+      refLevel: r,
+      displayRange: i,
+      colorMap: b,
+      averaging: c,
+      showPeakHold: u,
       targetRate: D,
-      jitterBufferMs: A,
-      waterfallScaleMode: b,
-      waterfallFixedMinDb: d,
-      waterfallFixedMaxDb: g
+      jitterBufferMs: I,
+      waterfallScaleMode: m,
+      waterfallFixedMinDb: g,
+      waterfallFixedMaxDb: y
     }
-  }), xt = J(n);
-  Le(() => {
-    if (!V.current) return;
-    const i = new ResizeObserver((e) => {
+  }), xt = Q(n);
+  Ne(() => {
+    if (!B.current) return;
+    const l = new ResizeObserver((e) => {
       for (const P of e)
-        Fe({
+        Ie({
           width: P.contentRect.width,
           height: P.contentRect.height
         });
     });
-    return i.observe(V.current), () => i.disconnect();
-  }, []), Le(() => {
-    k.current.props = {
+    return l.observe(B.current), () => l.disconnect();
+  }, []), Ne(() => {
+    E.current.props = {
       running: n,
-      refLevel: o,
-      displayRange: r,
-      colorMap: u,
-      averaging: l,
-      showPeakHold: c,
+      playbackMode: o,
+      refLevel: r,
+      displayRange: i,
+      colorMap: b,
+      averaging: c,
+      showPeakHold: u,
       targetRate: D,
-      jitterBufferMs: A,
-      waterfallScaleMode: b,
-      waterfallFixedMinDb: d,
-      waterfallFixedMaxDb: g
-    }, typeof d == "number" && typeof g == "number" && (k.current.waterfallFixedMinDb = d, k.current.waterfallFixedMaxDb = g, k.current.waterfallFixedReady = !0, ke({ min: d, max: g }));
-    const i = bt(u);
-    pe.current = i, h.current += 1;
-    const e = k.current.gl;
-    e && k.current.colormapTexture && (e.bindTexture(e.TEXTURE_2D, k.current.colormapTexture), e.texSubImage2D(e.TEXTURE_2D, 0, 0, 0, 256, 1, e.RGBA, e.UNSIGNED_BYTE, i));
-  }, [n, o, r, u, l, c, D, A, b, d, g]), Le(() => {
+      jitterBufferMs: I,
+      waterfallScaleMode: m,
+      waterfallFixedMinDb: g,
+      waterfallFixedMaxDb: y
+    }, typeof g == "number" && typeof y == "number" && (E.current.waterfallFixedMinDb = g, E.current.waterfallFixedMaxDb = y, E.current.waterfallFixedReady = !0, K({ min: g, max: y }));
+    const l = bt(b);
+    h.current = l, z.current += 1;
+    const e = E.current.gl;
+    e && E.current.colormapTexture && (e.bindTexture(e.TEXTURE_2D, E.current.colormapTexture), e.texSubImage2D(e.TEXTURE_2D, 0, 0, 0, 256, 1, e.RGBA, e.UNSIGNED_BYTE, l));
+  }, [n, o, r, i, b, c, u, D, I, m, g, y]), Ne(() => {
     if (n && !xt.current) {
-      const i = k.current, e = i.gl, P = i.fftSize;
-      if (i.frameQueue = [], i.renderTime = 0, i.lastRafTime = 0, i.accumulator = 0, i.fftSize = 0, i.averagedBins = new Float32Array(0), i.waterfallRow = 0, i.waterfallScaleReady = !1, y.current = [], $.current.clear(), w([]), be.current = 0, e) {
-        const R = P > 0 ? P : 1;
-        i.waterfallTexture && (e.bindTexture(e.TEXTURE_2D, i.waterfallTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, R, i.waterfallHeight, 0, e.RED, e.FLOAT, null)), i.spectrumDataTexture && (e.bindTexture(e.TEXTURE_2D, i.spectrumDataTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, R, 1, 0, e.RED, e.FLOAT, null));
+      const l = E.current, e = l.gl, P = l.fftSize;
+      if (l.frameQueue = [], l.renderTime = 0, l.lastRafTime = 0, l.accumulator = 0, l.fftSize = 0, l.averagedBins = new Float32Array(0), l.waterfallRow = 0, l.waterfallScaleReady = !1, Y.current = [], ie.current.clear(), R([]), w.current = 0, e) {
+        const k = P > 0 ? P : 1;
+        l.waterfallTexture && (e.bindTexture(e.TEXTURE_2D, l.waterfallTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, k, l.waterfallHeight, 0, e.RED, e.FLOAT, null)), l.spectrumDataTexture && (e.bindTexture(e.TEXTURE_2D, l.spectrumDataTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, k, 1, 0, e.RED, e.FLOAT, null));
       }
     }
     xt.current = n;
-  }, [n]), Le(() => {
+  }, [n]), Ne(() => {
     if (!t || t.length === 0) return;
-    const i = k.current;
-    if (!i.props.running) return;
-    t.forEach((R) => {
-      if (!R.fftBins || R.fftBins.length === 0) return;
-      R.fftBins.length !== i.fftSize && (i.fftSize = R.fftBins.length, i.averagedBins = new Float32Array(R.fftBins));
-      const E = i.frameQueue;
-      if (E.length === 0 || R.time > E[E.length - 1].time)
-        E.push(R);
+    const l = E.current;
+    if (!l.props.running) return;
+    t.forEach((k) => {
+      if (!k.fftBins || k.fftBins.length === 0) return;
+      k.fftBins.length !== l.fftSize && (l.fftSize = k.fftBins.length, l.averagedBins = new Float32Array(k.fftBins));
+      const _ = l.frameQueue;
+      if (_.length === 0 || k.time > _[_.length - 1].time)
+        _.push(k);
       else {
-        let L = E.length - 1;
-        for (; L >= 0 && E[L].time > R.time; )
-          L--;
-        E.splice(L + 1, 0, R);
+        let F = _.length - 1;
+        for (; F >= 0 && _[F].time > k.time; )
+          F--;
+        _.splice(F + 1, 0, k);
       }
-      i.renderTime === 0 && (i.renderTime = R.time - i.props.jitterBufferMs / 1e3, i.averagedBins.set(R.fftBins));
+      l.renderTime === 0 && (l.renderTime = k.time - l.props.jitterBufferMs / 1e3, l.averagedBins.set(k.fftBins));
     });
-    const e = i.frameQueue, P = Math.ceil(i.props.targetRate * 5);
+    const e = l.frameQueue, P = Math.ceil(l.props.targetRate * 5);
     if (e.length > P) {
-      const R = e[e.length - 1].time;
-      if (R - i.renderTime > 5)
-        for (i.renderTime = R - i.props.jitterBufferMs / 1e3; e.length > P; ) e.shift();
-      else
-        for (; e.length > P; ) e.shift();
+      const k = e[e.length - 1].time;
+      for (k - l.renderTime > 5 && l.props.playbackMode === "live" && (l.renderTime = k - l.props.jitterBufferMs / 1e3); e.length > P; ) e.shift();
     }
-  }, [t]), Le(() => {
-    const i = ce.current;
-    if (!i) return;
-    const e = i.getContext("webgl2", { alpha: !1, antialias: !1 });
+  }, [t]), Ne(() => {
+    const l = se.current;
+    if (!l) return;
+    const e = l.getContext("webgl2", { alpha: !1, antialias: !1 });
     if (!e) {
       console.error("WebGL 2 not supported");
       return;
     }
-    k.current.gl = e;
-    const P = pt(e, Kr, eo), R = pt(e, Jr, Qr), E = pt(e, to, ro);
-    if (!P || !R || !E) return;
-    k.current.programSpectrumLine = P, k.current.programSpectrumFill = R, k.current.programWaterfall = E;
-    const L = e.createVertexArray();
-    k.current.spectrumVao = L;
-    const _e = e.createVertexArray();
-    e.bindVertexArray(_e);
-    const ue = new Float32Array([-1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, -1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, 1]), de = e.createBuffer();
-    e.bindBuffer(e.ARRAY_BUFFER, de), e.bufferData(e.ARRAY_BUFFER, ue, e.STATIC_DRAW);
-    const se = e.getAttribLocation(E, "a_position"), he = e.getAttribLocation(E, "a_texCoord");
-    e.enableVertexAttribArray(se), e.vertexAttribPointer(se, 2, e.FLOAT, !1, 16, 0), e.enableVertexAttribArray(he), e.vertexAttribPointer(he, 2, e.FLOAT, !1, 16, 8);
+    E.current.gl = e;
+    const P = pt(e, ro, oo), k = pt(e, Kr, eo), _ = pt(e, no, ao);
+    if (!P || !k || !_) return;
+    E.current.programSpectrumLine = P, E.current.programSpectrumFill = k, E.current.programWaterfall = _;
+    const F = e.createVertexArray();
+    E.current.spectrumVao = F;
+    const ye = e.createVertexArray();
+    e.bindVertexArray(ye);
+    const de = new Float32Array([-1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, -1, 1, 0, 1, 1, -1, 1, 0, 1, 1, 1, 1]), fe = e.createBuffer();
+    e.bindBuffer(e.ARRAY_BUFFER, fe), e.bufferData(e.ARRAY_BUFFER, de, e.STATIC_DRAW);
+    const oe = e.getAttribLocation(_, "a_position"), he = e.getAttribLocation(_, "a_texCoord");
+    e.enableVertexAttribArray(oe), e.vertexAttribPointer(oe, 2, e.FLOAT, !1, 16, 0), e.enableVertexAttribArray(he), e.vertexAttribPointer(he, 2, e.FLOAT, !1, 16, 8);
     const yt = e.getExtension("OES_texture_float_linear") ? e.LINEAR : e.NEAREST, Rt = e.createTexture();
-    e.bindTexture(e.TEXTURE_2D, Rt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.REPEAT), k.current.waterfallTexture = Rt;
+    e.bindTexture(e.TEXTURE_2D, Rt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, yt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.REPEAT), E.current.waterfallTexture = Rt;
     const kt = e.createTexture();
-    e.bindTexture(e.TEXTURE_2D, kt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), k.current.spectrumDataTexture = kt;
+    e.bindTexture(e.TEXTURE_2D, kt), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.NEAREST), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), E.current.spectrumDataTexture = kt;
     const Et = e.createTexture();
-    e.bindTexture(e.TEXTURE_2D, Et), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), e.texImage2D(e.TEXTURE_2D, 0, e.RGBA, 256, 1, 0, e.RGBA, e.UNSIGNED_BYTE, bt(k.current.props.colorMap)), k.current.colormapTexture = Et;
+    e.bindTexture(e.TEXTURE_2D, Et), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MIN_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_MAG_FILTER, e.LINEAR), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_S, e.CLAMP_TO_EDGE), e.texParameteri(e.TEXTURE_2D, e.TEXTURE_WRAP_T, e.CLAMP_TO_EDGE), e.texImage2D(e.TEXTURE_2D, 0, e.RGBA, 256, 1, 0, e.RGBA, e.UNSIGNED_BYTE, bt(E.current.props.colorMap)), E.current.colormapTexture = Et;
     let xe = 0;
     const _t = () => {
-      const fe = oe.current;
-      if (!fe) return;
-      const s = fe.getContext("2d");
+      const me = ge.current;
+      if (!me) return;
+      const s = me.getContext("2d");
       if (!s) return;
-      const Se = fe.getBoundingClientRect(), O = window.devicePixelRatio || 1, me = Math.max(1, Math.floor(Se.width * O)), we = Math.max(1, Math.floor(Se.height * O)), q = k.current.props, We = q.waterfallScaleMode === "fixed", Ke = k.current.waterfallScaleReady ? k.current.waterfallMinDb : q.refLevel - q.displayRange, et = k.current.waterfallScaleReady ? k.current.waterfallMaxDb : q.refLevel, $e = k.current.waterfallFixedMinDb, ct = k.current.waterfallFixedMaxDb, De = We && k.current.waterfallFixedReady ? $e : Ke, qe = We && k.current.waterfallFixedReady ? ct : et, tt = h.current, H = z.current;
-      if (H.w === me && H.h === we && H.refLevel === q.refLevel && H.displayRange === q.displayRange && H.minDb === De && H.maxDb === qe && H.cmapVersion === tt)
+      const Re = me.getBoundingClientRect(), j = window.devicePixelRatio || 1, pe = Math.max(1, Math.floor(Re.width * j)), we = Math.max(1, Math.floor(Re.height * j)), $ = E.current.props, $e = $.waterfallScaleMode === "fixed", tt = E.current.waterfallScaleReady ? E.current.waterfallMinDb : $.refLevel - $.displayRange, rt = E.current.waterfallScaleReady ? E.current.waterfallMaxDb : $.refLevel, qe = E.current.waterfallFixedMinDb, dt = E.current.waterfallFixedMaxDb, ke = $e && E.current.waterfallFixedReady ? qe : tt, He = $e && E.current.waterfallFixedReady ? dt : rt, ot = z.current, q = Le.current;
+      if (q.w === pe && q.h === we && q.refLevel === $.refLevel && q.displayRange === $.displayRange && q.minDb === ke && q.maxDb === He && q.cmapVersion === ot)
         return;
-      z.current = { w: me, h: we, refLevel: q.refLevel, displayRange: q.displayRange, minDb: De, maxDb: qe, cmapVersion: tt }, fe.width !== me && (fe.width = me), fe.height !== we && (fe.height = we);
-      const ve = s.createImageData(me, we), Pe = ve.data, ze = pe.current, G = Math.max(1e-6, qe - De);
-      for (let Te = 0; Te < we; Te++) {
-        const St = we > 1 ? Te / (we - 1) : 0, ut = q.refLevel - St * q.displayRange, ie = Math.max(0, Math.min(1, (ut - De) / G)), U = Math.max(0, Math.min(255, Math.round(ie * 255))) * 4, ye = ze[U], Ce = ze[U + 1], Xe = ze[U + 2], dt = ze[U + 3];
-        for (let He = 0; He < me; He++) {
-          const Re = (Te * me + He) * 4;
-          Pe[Re] = ye, Pe[Re + 1] = Ce, Pe[Re + 2] = Xe, Pe[Re + 3] = dt;
+      Le.current = { w: pe, h: we, refLevel: $.refLevel, displayRange: $.displayRange, minDb: ke, maxDb: He, cmapVersion: ot }, me.width !== pe && (me.width = pe), me.height !== we && (me.height = we);
+      const ve = s.createImageData(pe, we), De = ve.data, Ae = h.current, Xe = Math.max(1e-6, He - ke);
+      for (let Je = 0; Je < we; Je++) {
+        const ne = we > 1 ? Je / (we - 1) : 0, je = $.refLevel - ne * $.displayRange, St = Math.max(0, Math.min(1, (je - ke) / Xe)), G = Math.max(0, Math.min(255, Math.round(St * 255))) * 4, H = Ae[G], J = Ae[G + 1], Te = Ae[G + 2], Me = Ae[G + 3];
+        for (let Pe = 0; Pe < pe; Pe++) {
+          const Ge = (Je * pe + Pe) * 4;
+          De[Ge] = H, De[Ge + 1] = J, De[Ge + 2] = Te, De[Ge + 3] = Me;
         }
       }
       s.putImageData(ve, 0, 0);
-    }, lt = (fe) => {
-      const s = k.current, { fftSize: Se, frameQueue: O } = s, me = s.props.waterfallScaleMode;
-      s.lastWaterfallScaleMode !== me && (me === "fixed" && (s.waterfallScaleReady ? (s.waterfallFixedMinDb = s.waterfallMinDb, s.waterfallFixedMaxDb = s.waterfallMaxDb, s.waterfallFixedReady = !0, te || ke({ min: s.waterfallFixedMinDb, max: s.waterfallFixedMaxDb })) : s.waterfallFixedReady = !1), s.lastWaterfallScaleMode = me), s.lastRafTime === 0 && (s.lastRafTime = fe);
-      const we = (fe - s.lastRafTime) / 1e3;
-      s.lastRafTime = fe;
-      const q = 1 / s.props.targetRate;
-      let We = 0;
-      const Ke = 5e3;
-      if (Se > 0 && Se !== xe && (xe = Se, e.bindTexture(e.TEXTURE_2D, s.waterfallTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, xe, s.waterfallHeight, 0, e.RED, e.FLOAT, null), e.bindTexture(e.TEXTURE_2D, s.spectrumDataTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, xe, 1, 0, e.RED, e.FLOAT, null)), s.props.running) {
+    }, ut = (me) => {
+      const s = E.current, { fftSize: Re, frameQueue: j } = s, pe = s.props.waterfallScaleMode;
+      s.lastWaterfallScaleMode !== pe && (pe === "fixed" && (s.waterfallScaleReady ? (s.waterfallFixedMinDb = s.waterfallMinDb, s.waterfallFixedMaxDb = s.waterfallMaxDb, s.waterfallFixedReady = !0, W || K({ min: s.waterfallFixedMinDb, max: s.waterfallFixedMaxDb })) : s.waterfallFixedReady = !1), s.lastWaterfallScaleMode = pe), s.lastRafTime === 0 && (s.lastRafTime = me);
+      const we = (me - s.lastRafTime) / 1e3;
+      s.lastRafTime = me;
+      const $ = 1 / s.props.targetRate;
+      let $e = 0;
+      const tt = 5e3;
+      if (Re > 0 && Re !== xe && (xe = Re, e.bindTexture(e.TEXTURE_2D, s.waterfallTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, xe, s.waterfallHeight, 0, e.RED, e.FLOAT, null), e.bindTexture(e.TEXTURE_2D, s.spectrumDataTexture), e.texImage2D(e.TEXTURE_2D, 0, e.R32F, xe, 1, 0, e.RED, e.FLOAT, null)), s.props.running) {
         s.accumulator += we;
-        const H = 5;
-        for (s.accumulator > H && (s.accumulator = H); s.accumulator >= q && We < Ke && Se > 0; ) {
-          const ve = s.accumulator > s.props.jitterBufferMs / 1e3 * 1.5, Pe = O.length > 0 ? O[O.length - 1] : null, ze = Pe && Pe.time > s.renderTime;
-          if (ve && !ze)
+        const q = 5;
+        for (s.accumulator > q && (s.accumulator = q); s.accumulator >= $ && $e < tt && Re > 0; ) {
+          const ve = s.accumulator > s.props.jitterBufferMs / 1e3 * 1.5, De = s.props.playbackMode === "replay", Ae = j.length > 0 ? j[j.length - 1] : null, Xe = Ae && Ae.time > s.renderTime;
+          if ((De || ve) && !Xe) {
+            De && (s.accumulator = 0);
             break;
-          for (s.accumulator -= q, s.renderTime += q, We++; O.length > 2 && O[1].time < s.renderTime; )
-            O.shift();
-          let G = null;
-          if (O.length !== 0) if (s.renderTime < O[0].time)
-            G = O[0].fftBins;
-          else if (O.length === 1)
-            G = O[0].fftBins;
+          }
+          for (s.accumulator -= $, s.renderTime += $, $e++; j.length > 2 && j[1].time < s.renderTime; )
+            j.shift();
+          let ne = null;
+          if (j.length !== 0) if (s.renderTime < j[0].time)
+            ne = j[0].fftBins;
+          else if (j.length === 1)
+            ne = j[0].fftBins;
           else {
-            const ie = O[0], re = O[1];
-            if (s.renderTime >= re.time)
-              G = re.fftBins;
+            const G = j[0], H = j[1];
+            if (s.renderTime >= H.time)
+              ne = H.fftBins;
             else {
-              const U = (s.renderTime - ie.time) / (re.time - ie.time), ye = Math.max(0, Math.min(1, U)), Ce = Se;
-              (!s.averagedBins || s.averagedBins.length !== Ce) && (s.averagedBins = new Float32Array(Ce));
-              const Xe = s.averagedBins, dt = ie.fftBins, He = re.fftBins;
-              for (let Re = 0; Re < Ce; Re++)
-                Xe[Re] = dt[Re] * (1 - ye) + He[Re] * ye;
-              G = Xe;
+              const J = (s.renderTime - G.time) / (H.time - G.time), Te = Math.max(0, Math.min(1, J)), Me = Re;
+              (!s.averagedBins || s.averagedBins.length !== Me) && (s.averagedBins = new Float32Array(Me));
+              const Pe = s.averagedBins, Ge = G.fftBins, ar = H.fftBins;
+              for (let Qe = 0; Qe < Me; Qe++)
+                Pe[Qe] = Ge[Qe] * (1 - Te) + ar[Qe] * Te;
+              ne = Pe;
             }
           }
-          if (G) {
-            let ie = 1 / 0, re = -1 / 0;
-            for (let U = 0; U < G.length; U++) {
-              const ye = G[U];
-              ye < ie && (ie = ye), ye > re && (re = ye);
+          if (ne) {
+            let G = 1 / 0, H = -1 / 0;
+            for (let J = 0; J < ne.length; J++) {
+              const Te = ne[J];
+              Te < G && (G = Te), Te > H && (H = Te);
             }
-            if (Number.isFinite(ie) && Number.isFinite(re)) {
+            if (Number.isFinite(G) && Number.isFinite(H)) {
               if (!s.waterfallScaleReady)
-                s.waterfallMinDb = ie, s.waterfallMaxDb = re, s.waterfallScaleReady = !0;
+                s.waterfallMinDb = G, s.waterfallMaxDb = H, s.waterfallScaleReady = !0;
               else {
-                const U = s.waterfallScaleAlpha;
-                s.waterfallMinDb = s.waterfallMinDb * (1 - U) + ie * U, s.waterfallMaxDb = s.waterfallMaxDb * (1 - U) + re * U;
+                const J = s.waterfallScaleAlpha;
+                s.waterfallMinDb = s.waterfallMinDb * (1 - J) + G * J, s.waterfallMaxDb = s.waterfallMaxDb * (1 - J) + H * J;
               }
-              s.waterfallMaxDb - s.waterfallMinDb < 1 && (s.waterfallMaxDb = s.waterfallMinDb + 1), s.props.waterfallScaleMode === "fixed" && !s.waterfallFixedReady && (s.waterfallFixedMinDb = s.waterfallMinDb, s.waterfallFixedMaxDb = s.waterfallMaxDb, s.waterfallFixedReady = !0, te || ke({ min: s.waterfallFixedMinDb, max: s.waterfallFixedMaxDb }));
+              s.waterfallMaxDb - s.waterfallMinDb < 1 && (s.waterfallMaxDb = s.waterfallMinDb + 1), s.props.waterfallScaleMode === "fixed" && !s.waterfallFixedReady && (s.waterfallFixedMinDb = s.waterfallMinDb, s.waterfallFixedMaxDb = s.waterfallMaxDb, s.waterfallFixedReady = !0, W || K({ min: s.waterfallFixedMinDb, max: s.waterfallFixedMaxDb }));
             }
-            e.bindTexture(e.TEXTURE_2D, s.waterfallTexture), e.pixelStorei(e.UNPACK_ALIGNMENT, 1), e.texSubImage2D(e.TEXTURE_2D, 0, 0, s.waterfallRow, xe, 1, e.RED, e.FLOAT, G), s.waterfallRow = (s.waterfallRow + 1) % s.waterfallHeight, G !== s.averagedBins && s.averagedBins.set(G);
+            e.bindTexture(e.TEXTURE_2D, s.waterfallTexture), e.pixelStorei(e.UNPACK_ALIGNMENT, 1), e.texSubImage2D(e.TEXTURE_2D, 0, 0, s.waterfallRow, xe, 1, e.RED, e.FLOAT, ne), s.waterfallRow = (s.waterfallRow + 1) % s.waterfallHeight, ne !== s.averagedBins && s.averagedBins.set(ne);
           }
-          const Te = s.renderTime * 1e3, ut = s.waterfallHeight / s.props.targetRate * 1e3;
-          if (Te - be.current > 2e3) {
-            const re = new Date(Te).toLocaleTimeString("en-US", { hour12: !1, hour: "2-digit", minute: "2-digit", second: "2-digit" }), U = { id: Te, label: re, rowIndex: s.waterfallRow }, Ce = [...y.current, U].filter((Xe) => Te - Xe.id < ut);
-            y.current = Ce, w(Ce), be.current = Te;
+          const je = s.renderTime * 1e3, Dt = s.waterfallHeight / s.props.targetRate * 1e3;
+          if (je - w.current > 2e3) {
+            const H = new Date(je).toLocaleTimeString("en-US", { hour12: !1, hour: "2-digit", minute: "2-digit", second: "2-digit" }), J = { id: je, label: H, rowIndex: s.waterfallRow }, Me = [...Y.current, J].filter((Pe) => je - Pe.id < Dt);
+            Y.current = Me, R(Me), w.current = je;
           }
         }
       }
-      if (Hr(i) && e.viewport(0, 0, i.width, i.height), e.clearColor(0, 0, 0, 1), e.clear(e.COLOR_BUFFER_BIT), Se === 0) {
-        _t(), Y.current = requestAnimationFrame(lt);
+      if (Zr(l) && e.viewport(0, 0, l.width, l.height), e.clearColor(0, 0, 0, 1), e.clear(e.COLOR_BUFFER_BIT), Re === 0) {
+        _t(), X.current = requestAnimationFrame(ut);
         return;
       }
       e.bindTexture(e.TEXTURE_2D, s.spectrumDataTexture), e.texSubImage2D(e.TEXTURE_2D, 0, 0, 0, xe, 1, e.RED, e.FLOAT, s.averagedBins);
-      const et = p.current, $e = Math.floor(i.height * (1 - et));
-      e.viewport(0, 0, i.width, $e), e.useProgram(s.programWaterfall), e.bindVertexArray(_e), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, s.waterfallTexture), e.uniform1i(e.getUniformLocation(E, "u_waterfall"), 0), e.activeTexture(e.TEXTURE1), e.bindTexture(e.TEXTURE_2D, s.colormapTexture), e.uniform1i(e.getUniformLocation(E, "u_colormap"), 1);
-      const ct = s.waterfallRow / s.waterfallHeight;
-      e.uniform1f(e.getUniformLocation(E, "u_offset"), ct), s.props.waterfallScaleMode === "fixed" && s.waterfallFixedReady ? (e.uniform1f(e.getUniformLocation(E, "u_minDb"), s.waterfallFixedMinDb), e.uniform1f(e.getUniformLocation(E, "u_maxDb"), s.waterfallFixedMaxDb)) : (e.uniform1f(e.getUniformLocation(E, "u_minDb"), s.waterfallMinDb), e.uniform1f(e.getUniformLocation(E, "u_maxDb"), s.waterfallMaxDb)), e.drawArrays(e.TRIANGLES, 0, 6), e.viewport(0, $e, i.width, i.height - $e), e.enable(e.BLEND), e.blendFunc(e.SRC_ALPHA, e.ONE_MINUS_SRC_ALPHA), e.useProgram(s.programSpectrumFill), e.bindVertexArray(s.spectrumVao), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, s.spectrumDataTexture), e.uniform1i(e.getUniformLocation(R, "u_data"), 0), e.uniform1f(e.getUniformLocation(R, "u_bins"), xe), e.uniform1f(e.getUniformLocation(R, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(R, "u_maxDb"), s.props.refLevel), e.drawArrays(e.TRIANGLE_STRIP, 0, xe * 2), e.useProgram(s.programSpectrumLine), e.bindVertexArray(s.spectrumVao), e.uniform1i(e.getUniformLocation(P, "u_data"), 0), e.uniform1f(e.getUniformLocation(P, "u_bins"), xe), e.uniform1f(e.getUniformLocation(P, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(P, "u_maxDb"), s.props.refLevel), e.drawArrays(e.LINE_STRIP, 0, xe), e.disable(e.BLEND), _t();
-      const De = s.waterfallHeight, qe = De / s.props.targetRate, tt = s.renderTime * 1e3;
-      y.current.forEach((H) => {
-        const ve = $.current.get(H.id);
+      const rt = _e.current, qe = Math.floor(l.height * (1 - rt));
+      e.viewport(0, 0, l.width, qe), e.useProgram(s.programWaterfall), e.bindVertexArray(ye), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, s.waterfallTexture), e.uniform1i(e.getUniformLocation(_, "u_waterfall"), 0), e.activeTexture(e.TEXTURE1), e.bindTexture(e.TEXTURE_2D, s.colormapTexture), e.uniform1i(e.getUniformLocation(_, "u_colormap"), 1);
+      const dt = s.waterfallRow / s.waterfallHeight;
+      e.uniform1f(e.getUniformLocation(_, "u_offset"), dt), s.props.waterfallScaleMode === "fixed" && s.waterfallFixedReady ? (e.uniform1f(e.getUniformLocation(_, "u_minDb"), s.waterfallFixedMinDb), e.uniform1f(e.getUniformLocation(_, "u_maxDb"), s.waterfallFixedMaxDb)) : (e.uniform1f(e.getUniformLocation(_, "u_minDb"), s.waterfallMinDb), e.uniform1f(e.getUniformLocation(_, "u_maxDb"), s.waterfallMaxDb)), e.drawArrays(e.TRIANGLES, 0, 6), e.viewport(0, qe, l.width, l.height - qe), e.enable(e.BLEND), e.blendFunc(e.SRC_ALPHA, e.ONE_MINUS_SRC_ALPHA), e.useProgram(s.programSpectrumFill), e.bindVertexArray(s.spectrumVao), e.activeTexture(e.TEXTURE0), e.bindTexture(e.TEXTURE_2D, s.spectrumDataTexture), e.uniform1i(e.getUniformLocation(k, "u_data"), 0), e.uniform1f(e.getUniformLocation(k, "u_bins"), xe), e.uniform1f(e.getUniformLocation(k, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(k, "u_maxDb"), s.props.refLevel), e.drawArrays(e.TRIANGLE_STRIP, 0, xe * 2), e.useProgram(s.programSpectrumLine), e.bindVertexArray(s.spectrumVao), e.uniform1i(e.getUniformLocation(P, "u_data"), 0), e.uniform1f(e.getUniformLocation(P, "u_bins"), xe), e.uniform1f(e.getUniformLocation(P, "u_minDb"), s.props.refLevel - s.props.displayRange), e.uniform1f(e.getUniformLocation(P, "u_maxDb"), s.props.refLevel), e.drawArrays(e.LINE_STRIP, 0, xe), e.disable(e.BLEND), _t();
+      const ke = s.waterfallHeight, He = ke / s.props.targetRate, ot = s.renderTime * 1e3;
+      Y.current.forEach((q) => {
+        const ve = ie.current.get(q.id);
         if (ve)
-          if ((tt - H.id) / 1e3 > qe)
+          if ((ot - q.id) / 1e3 > He)
             ve.style.display = "none";
           else {
             ve.style.display = "block";
-            let G = (s.waterfallRow - H.rowIndex + De) % De / De * 100;
-            ve.style.top = `${G}%`, ve.style.opacity = G > 98 ? "0" : "1";
+            let Xe = (s.waterfallRow - q.rowIndex + ke) % ke / ke * 100;
+            ve.style.top = `${Xe}%`, ve.style.opacity = Xe > 98 ? "0" : "1";
           }
-      }), Y.current = requestAnimationFrame(lt);
+      }), X.current = requestAnimationFrame(ut);
     };
-    return Y.current = requestAnimationFrame(lt), () => {
-      Y.current && cancelAnimationFrame(Y.current), e.deleteProgram(P), e.deleteProgram(R), e.deleteProgram(E), e.deleteTexture(k.current.waterfallTexture), e.deleteTexture(k.current.colormapTexture), e.deleteTexture(k.current.spectrumDataTexture);
+    return X.current = requestAnimationFrame(ut), () => {
+      X.current && cancelAnimationFrame(X.current), e.deleteProgram(P), e.deleteProgram(k), e.deleteProgram(_), e.deleteTexture(E.current.waterfallTexture), e.deleteTexture(E.current.colormapTexture), e.deleteTexture(E.current.spectrumDataTexture);
     };
   }, []);
-  const [Be, wt] = zt.useState(null), [vt, st] = Ne(!1), it = J(0), er = (i) => {
-    if (X) {
-      const se = V.current?.getBoundingClientRect();
-      if (se) {
-        let Me = (i.clientY - se.top) / se.height;
-        Me < 0.1 && (Me = 0.1), Me > 0.9 && (Me = 0.9), ne(Me);
+  const [Be, wt] = jt.useState(null), [vt, lt] = Ce(!1), ct = Q(0), rr = (l) => {
+    if (ee) {
+      const oe = B.current?.getBoundingClientRect();
+      if (oe) {
+        let Se = (l.clientY - oe.top) / oe.height;
+        Se < 0.1 && (Se = 0.1), Se > 0.9 && (Se = 0.9), V(Se);
       }
       return;
     }
-    if (vt && C) {
-      const se = i.clientY - it.current;
-      it.current = i.clientY;
-      const he = r / Ee, Me = se * he;
-      C(o + Me);
+    if (vt && O) {
+      const oe = l.clientY - ct.current;
+      ct.current = l.clientY;
+      const he = i / a, Se = oe * he;
+      O(r + Se);
       return;
     }
-    const e = V.current?.getBoundingClientRect();
+    const e = B.current?.getBoundingClientRect();
     if (!e) return;
-    const P = i.clientX - e.left, R = i.clientY - e.top, E = Z - le / 2, L = le / e.width, _e = E + P * L, ue = e.height * j;
-    let de = -1 / 0;
-    if (R < ue) {
-      const he = r / ue;
-      de = o - R * he;
+    const P = l.clientX - e.left, k = l.clientY - e.top, _ = be - te / 2, F = te / e.width, ye = _ + P * F, de = e.height * N;
+    let fe = -1 / 0;
+    if (k < de) {
+      const he = i / de;
+      fe = r - k * he;
     }
-    wt({ freq: _e, db: de, x: P, y: R });
-  }, tr = () => {
-    wt(null), X && W(!1), vt && st(!1);
-  }, rr = () => {
-    W(!1), st(!1);
-  }, Tt = (i) => {
-    if (r <= 0) return 0;
-    const e = (o - i) / r * 100;
+    wt({ freq: ye, db: fe, x: P, y: k });
+  }, or = () => {
+    wt(null), ee && p(!1), vt && lt(!1);
+  }, nr = () => {
+    p(!1), lt(!1);
+  }, Tt = (l) => {
+    if (i <= 0) return 0;
+    const e = (r - l) / i * 100;
     return Math.max(0, Math.min(100, e));
   };
-  return Le(() => {
-    te || (k.current.waterfallFixedMinDb = K.min, k.current.waterfallFixedMaxDb = K.max, k.current.waterfallFixedReady = !0);
-  }, [te, K]), Le(() => {
-    if (!ee) return;
-    const i = (P) => {
-      const R = V.current?.getBoundingClientRect();
-      if (!R) return;
-      const E = R.height * j;
-      if (E <= 0 || r === 0) return;
-      const L = Math.min(Math.max(P.clientY - R.top, 0), E), _e = o - L / E * r;
-      let ue = te ? d : K.min, de = te ? g : K.max;
-      ee === "min" ? ue = Math.min(_e, de - 1) : de = Math.max(_e, ue + 1);
-      const se = o - r, he = o;
-      ue = Math.min(he - 1, Math.max(se, ue)), de = Math.max(se + 1, Math.min(he, de)), F ? F(ue, de) : ke({ min: ue, max: de });
-    }, e = () => ge(null);
-    return window.addEventListener("mousemove", i), window.addEventListener("mouseup", e), () => {
-      window.removeEventListener("mousemove", i), window.removeEventListener("mouseup", e);
+  return Ne(() => {
+    W || (E.current.waterfallFixedMinDb = Z.min, E.current.waterfallFixedMaxDb = Z.max, E.current.waterfallFixedReady = !0);
+  }, [W, Z]), Ne(() => {
+    if (!ue) return;
+    const l = (P) => {
+      const k = B.current?.getBoundingClientRect();
+      if (!k) return;
+      const _ = k.height * N;
+      if (_ <= 0 || i === 0) return;
+      const F = Math.min(Math.max(P.clientY - k.top, 0), _), ye = r - F / _ * i;
+      let de = W ? g : Z.min, fe = W ? y : Z.max;
+      ue === "min" ? de = Math.min(ye, fe - 1) : fe = Math.max(ye, de + 1);
+      const oe = r - i, he = r;
+      de = Math.min(he - 1, Math.max(oe, de)), fe = Math.max(oe + 1, Math.min(he, fe)), C ? C(de, fe) : K({ min: de, max: fe });
+    }, e = () => ze(null);
+    return window.addEventListener("mousemove", l), window.addEventListener("mouseup", e), () => {
+      window.removeEventListener("mousemove", l), window.removeEventListener("mouseup", e);
     };
   }, [
-    ee,
-    j,
+    ue,
+    N,
+    i,
     r,
-    o,
-    te,
-    d,
+    W,
     g,
-    K,
-    F
-  ]), /* @__PURE__ */ _.jsxs(
+    y,
+    Z,
+    C
+  ]), /* @__PURE__ */ S.jsxs(
     "div",
     {
-      ref: V,
-      className: Ft("relative w-full h-full bg-black overflow-hidden cursor-crosshair group", S),
-      onMouseMove: er,
-      onMouseLeave: tr,
-      onMouseUp: rr,
+      ref: B,
+      className: Ut("relative w-full h-full bg-black overflow-hidden cursor-crosshair group", M),
+      onMouseMove: rr,
+      onMouseLeave: or,
+      onMouseUp: nr,
       children: [
-        /* @__PURE__ */ _.jsx(
+        /* @__PURE__ */ S.jsx(
           "canvas",
           {
-            ref: ce,
+            ref: se,
             className: "block w-full h-full"
           }
         ),
-        /* @__PURE__ */ _.jsxs(
+        /* @__PURE__ */ S.jsxs(
           "div",
           {
             className: "absolute top-0 left-0 right-0 pointer-events-none overflow-hidden",
-            style: { height: `${j * 100}%` },
+            style: { height: `${N * 100}%` },
             children: [
-              /* @__PURE__ */ _.jsx("div", { className: "absolute top-0 left-0 w-1 z-10 pointer-events-none", style: { bottom: "6px" }, children: /* @__PURE__ */ _.jsx("canvas", { ref: oe, className: "block w-full h-full" }) }),
-              /* @__PURE__ */ _.jsx(
+              /* @__PURE__ */ S.jsx("div", { className: "absolute top-0 left-0 w-1 z-10 pointer-events-none", style: { bottom: "6px" }, children: /* @__PURE__ */ S.jsx("canvas", { ref: ge, className: "block w-full h-full" }) }),
+              /* @__PURE__ */ S.jsx(
                 "div",
                 {
                   className: "absolute top-0 left-0 bottom-0 w-12 z-40 cursor-ns-resize hover:bg-white/5 active:bg-white/10 transition-colors pointer-events-auto",
                   title: "Drag to adjust reference level. scroll to zoom",
-                  onMouseDown: (i) => {
-                    i.preventDefault(), i.stopPropagation(), st(!0), it.current = i.clientY;
+                  onMouseDown: (l) => {
+                    l.preventDefault(), l.stopPropagation(), lt(!0), ct.current = l.clientY;
                   },
-                  onWheel: (i) => {
-                    if (!Q || !C) return;
-                    i.preventDefault(), i.stopPropagation();
-                    const e = i.currentTarget.getBoundingClientRect(), R = (i.clientY - e.top) / e.height, E = 1.1;
-                    let L = r;
-                    i.deltaY < 0 ? L = r / E : L = r * E, L < 10 && (L = 10), L > 200 && (L = 200);
-                    const _e = o + R * (L - r);
-                    Q(L), C(_e);
+                  onWheel: (l) => {
+                    if (!U || !O) return;
+                    l.preventDefault(), l.stopPropagation();
+                    const e = l.currentTarget.getBoundingClientRect(), k = (l.clientY - e.top) / e.height, _ = 1.1;
+                    let F = i;
+                    l.deltaY < 0 ? F = i / _ : F = i * _, F < 10 && (F = 10), F > 200 && (F = 200);
+                    const ye = r + k * (F - i);
+                    U(F), O(ye);
                   }
                 }
               ),
-              /* @__PURE__ */ _.jsx(
+              /* @__PURE__ */ S.jsx(
                 "div",
                 {
                   className: "absolute top-0 left-0 bottom-0 w-3 z-50 pointer-events-auto",
-                  onMouseEnter: () => ae(!0),
-                  onMouseLeave: () => ae(!1),
-                  children: b === "fixed" && (v || ee) && /* @__PURE__ */ _.jsxs(_.Fragment, { children: [
-                    /* @__PURE__ */ _.jsx(
+                  onMouseEnter: () => ce(!0),
+                  onMouseLeave: () => ce(!1),
+                  children: m === "fixed" && (le || ue) && /* @__PURE__ */ S.jsxs(S.Fragment, { children: [
+                    /* @__PURE__ */ S.jsx(
                       "div",
                       {
                         className: "absolute left-0 w-3 h-3 -translate-y-1/2 bg-white/90 border border-black/60 rounded",
-                        style: { top: `${Tt(Kt)}%` },
-                        onMouseDown: (i) => {
-                          i.preventDefault(), i.stopPropagation(), ge("max");
+                        style: { top: `${Tt(tr)}%` },
+                        onMouseDown: (l) => {
+                          l.preventDefault(), l.stopPropagation(), ze("max");
                         }
                       }
                     ),
-                    /* @__PURE__ */ _.jsx(
+                    /* @__PURE__ */ S.jsx(
                       "div",
                       {
                         className: "absolute left-0 w-3 h-3 -translate-y-1/2 bg-white/90 border border-black/60 rounded",
-                        style: { top: `${Tt(Oe)}%` },
-                        onMouseDown: (i) => {
-                          i.preventDefault(), i.stopPropagation(), ge("min");
+                        style: { top: `${Tt(er)}%` },
+                        onMouseDown: (l) => {
+                          l.preventDefault(), l.stopPropagation(), ze("min");
                         }
                       }
                     )
                   ] })
                 }
               ),
-              a.map((i) => /* @__PURE__ */ _.jsxs(
+              x.map((l) => /* @__PURE__ */ S.jsxs(
                 "div",
                 {
                   className: "absolute left-0 w-full flex items-center group/tick",
-                  style: { top: `${i.percent}%`, transform: "translateY(-50%)" },
+                  style: { top: `${l.percent}%`, transform: "translateY(-50%)" },
                   children: [
-                    /* @__PURE__ */ _.jsx(
+                    /* @__PURE__ */ S.jsx(
                       "div",
                       {
-                        className: Ft(
+                        className: Ut(
                           "bg-black/60 text-xs text-white/90 px-1 ml-1 font-mono rounded-r transition-opacity",
-                          i.percent > 95 ? "opacity-0" : "opacity-100"
+                          l.percent > 95 ? "opacity-0" : "opacity-100"
                         ),
-                        children: i.val
+                        children: l.val
                       }
                     ),
-                    /* @__PURE__ */ _.jsx("div", { className: "ml-1 h-px bg-white/10 w-[calc(100%-0.25rem)]", style: { width: B.width } })
+                    /* @__PURE__ */ S.jsx("div", { className: "ml-1 h-px bg-white/10 w-[calc(100%-0.25rem)]", style: { width: re.width } })
                   ]
                 },
-                i.val
+                l.val
               ))
             ]
           }
         ),
-        /* @__PURE__ */ _.jsx(
+        /* @__PURE__ */ S.jsx(
           "div",
           {
             className: "absolute left-0 right-0 h-4 flex items-center justify-center z-30 cursor-row-resize hover:bg-white/5 active:bg-white/10 transition-colors -translate-y-1/2",
-            style: { top: `${j * 100}%` },
-            onMouseDown: (i) => {
-              i.preventDefault(), W(!0);
+            style: { top: `${N * 100}%` },
+            onMouseDown: (l) => {
+              l.preventDefault(), p(!0);
             },
-            children: /* @__PURE__ */ _.jsx("div", { className: "w-full h-px bg-white/20 pointer-events-none" })
+            children: /* @__PURE__ */ S.jsx("div", { className: "w-full h-px bg-white/20 pointer-events-none" })
           }
         ),
-        /* @__PURE__ */ _.jsxs(
+        /* @__PURE__ */ S.jsxs(
           "div",
           {
             className: "absolute left-0 right-0 h-6 bg-black flex items-center border-t border-white/20 pointer-events-none z-20",
-            style: { top: `${j * 100}%`, transform: "translateY(-100%)" },
+            style: { top: `${N * 100}%`, transform: "translateY(-100%)" },
             children: [
-              Ue.map((i) => /* @__PURE__ */ _.jsxs(
+              Ue.map((l) => /* @__PURE__ */ S.jsxs(
                 "div",
                 {
                   className: "absolute top-0 h-full flex flex-col justify-center items-center",
-                  style: { left: `${i.percent}%`, transform: "translateX(-50%)" },
+                  style: { left: `${l.percent}%`, transform: "translateX(-50%)" },
                   children: [
-                    /* @__PURE__ */ _.jsx("span", { className: "relative z-10 text-[10px] text-white font-mono bg-black px-1 whitespace-nowrap", children: i.label }),
-                    /* @__PURE__ */ _.jsx(
+                    /* @__PURE__ */ S.jsx("span", { className: "relative z-10 text-[10px] text-white font-mono bg-black px-1 whitespace-nowrap", children: l.label }),
+                    /* @__PURE__ */ S.jsx(
                       "div",
                       {
                         className: "w-px bg-white/10 absolute left-1/2 -translate-x-1/2 pointer-events-none",
-                        style: { height: B.height, top: -Ee }
+                        style: { height: re.height, top: -a }
                       }
                     )
                   ]
                 },
-                i.val
+                l.val
               )),
-              /* @__PURE__ */ _.jsx("div", { className: "absolute top-0 left-1/2 w-0.5 h-[5px] bg-red-500 -translate-x-1/2" })
+              /* @__PURE__ */ S.jsx("div", { className: "absolute top-0 left-1/2 w-0.5 h-[5px] bg-red-500 -translate-x-1/2" })
             ]
           }
         ),
-        /* @__PURE__ */ _.jsx(
+        /* @__PURE__ */ S.jsx(
           "div",
           {
             className: "absolute left-0 right-0 pointer-events-none overflow-hidden",
-            style: { top: `${j * 100}%`, bottom: 0 },
-            children: x.map((i) => /* @__PURE__ */ _.jsx(
+            style: { top: `${N * 100}%`, bottom: 0 },
+            children: v.map((l) => /* @__PURE__ */ S.jsx(
               "div",
               {
                 ref: (e) => {
-                  e ? $.current.set(i.id, e) : $.current.delete(i.id);
+                  e ? ie.current.set(l.id, e) : ie.current.delete(l.id);
                 },
                 className: "absolute w-full border-t border-white/20 transition-opacity duration-100",
                 style: { top: "-10px", opacity: 1 },
-                children: /* @__PURE__ */ _.jsx("div", { className: "absolute left-1 -top-3 text-[10px] text-white/70 font-mono bg-black/40 px-1 rounded", children: i.label })
+                children: /* @__PURE__ */ S.jsx("div", { className: "absolute left-1 -top-3 text-[10px] text-white/70 font-mono bg-black/40 px-1 rounded", children: l.label })
               },
-              i.id
+              l.id
             ))
           }
         ),
-        /* @__PURE__ */ _.jsxs("div", { className: "absolute top-2 right-2 text-xs text-white/70 font-mono pointer-events-none select-none bg-black/60 p-2 rounded text-right border border-white/10 z-40", children: [
-          /* @__PURE__ */ _.jsxs("div", { className: "font-bold text-white", children: [
-            (Z / 1e6).toFixed(3),
+        /* @__PURE__ */ S.jsxs("div", { className: "absolute top-2 right-2 text-xs text-white/70 font-mono pointer-events-none select-none bg-black/60 p-2 rounded text-right border border-white/10 z-40", children: [
+          /* @__PURE__ */ S.jsxs("div", { className: "font-bold text-white", children: [
+            (be / 1e6).toFixed(3),
             " MHz"
           ] }),
-          /* @__PURE__ */ _.jsxs("div", { className: "text-white/50", children: [
+          /* @__PURE__ */ S.jsxs("div", { className: "text-white/50", children: [
             "Span: ",
-            (le / 1e6).toFixed(3),
+            (te / 1e6).toFixed(3),
             " MHz"
           ] })
         ] }),
-        Be && /* @__PURE__ */ _.jsxs(
+        Be && /* @__PURE__ */ S.jsxs(
           "div",
           {
             className: "absolute pointer-events-none bg-black/90 text-white text-[10px] font-mono p-1 rounded border border-white/20 whitespace-nowrap z-50",
             style: {
-              left: Math.min(Be.x + 15, B.width - 120),
-              top: Math.min(Be.y + 15, B.height - 50)
+              left: Math.min(Be.x + 15, re.width - 120),
+              top: Math.min(Be.y + 15, re.height - 50)
             },
             children: [
-              /* @__PURE__ */ _.jsxs("div", { className: "text-yellow-400", children: [
+              /* @__PURE__ */ S.jsxs("div", { className: "text-yellow-400", children: [
                 (Be.freq / 1e6).toFixed(6),
                 " MHz"
               ] }),
-              Be.db > -1e3 && /* @__PURE__ */ _.jsxs("div", { className: "text-cyan-400", children: [
+              Be.db > -1e3 && /* @__PURE__ */ S.jsxs("div", { className: "text-cyan-400", children: [
                 Be.db.toFixed(1),
                 " dB"
               ] })
@@ -3731,5 +3733,5 @@ const so = ({
   );
 };
 export {
-  so as SpectrumWaterfall
+  co as SpectrumWaterfall
 };

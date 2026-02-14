@@ -9,7 +9,7 @@ Reusable Spectrum + Waterfall React component with a local demo app.
 ```json
 {
   "dependencies": {
-    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.3"
+    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.5"
   }
 }
 ```
@@ -32,6 +32,9 @@ export default function MySpectrumView() {
 
   return (
     <div style={{ width: '100%', height: '400px' }}>
+      <button onClick={() => setRunning(v => !v)}>
+        {running ? 'Stop' : 'Restart'}
+      </button>
       <SpectrumWaterfall
         data={frames}
         running={running}
@@ -75,9 +78,24 @@ type SpectrumData = {
 
 Notes:
 - `data` can be an empty array; the component will render a blank view.
-- `running={false}` freezes the last rendered state. Switching back to `running={true}` clears old history and starts fresh.
+- `running` defaults to `true`.
+- `running={false}` freezes the last rendered spectrum/waterfall state (useful at end-of-file).
+- Switching `running` from `false` to `true` clears old internal history and starts fresh for new input.
 - Use `waterfallScaleMode="auto"` for dynamic scaling, or `"fixed"` for a fixed min/max.
 - WebGL2 is required.
+
+## Playback control
+
+Use `running` to control whether the component advances:
+
+- `running={true}`: consumes incoming frames and keeps drawing.
+- `running={false}`: pauses ingestion/render timeline and keeps the last state visible.
+- `false -> true`: resets internal queue/history/markers so old lines are removed only on restart.
+
+Typical file-player flow:
+1) Play file A with `running={true}`.
+2) End of file: set `running={false}` to hold last status on screen.
+3) Load file B: set `running={true}` and provide new frames.
 
 ## Build (library)
 
@@ -121,12 +139,12 @@ npm run build
 2) Commit the build output:
 ```bash
 git add dist package.json README.md
-git commit -m "build: library output for v0.1.3"
+git commit -m "build: library output for vX.Y.Z"
 ```
 
 3) Tag and push:
 ```bash
-git tag v0.1.3
+git tag vX.Y.Z
 git push --tags
 ```
 
@@ -138,5 +156,5 @@ npm install
 When you update:
 - Rebuild (`npm run build`)
 - Commit `dist/`
-- Tag a new version (e.g. `v0.1.1`)
+- Tag a new version (e.g. `v0.1.6`)
 - Update the tag in the consumer repo and reinstall

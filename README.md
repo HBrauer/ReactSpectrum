@@ -9,7 +9,7 @@ Reusable Spectrum + Waterfall React component with a local demo app.
 ```json
 {
   "dependencies": {
-    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.7"
+    "spectrum-waterfall": "git+ssh://git@github.com/HBrauer/ReactSpectrum.git#v0.1.9"
   }
 }
 ```
@@ -89,7 +89,7 @@ Notes:
 - `running={false}` freezes the last rendered spectrum/waterfall state (useful at end-of-file).
 - Switching `running` from `false` to `true` clears old internal history and starts fresh for new input.
 - `playbackMode="live"` keeps the playhead moving and will hold/repeat the latest frame if future data is missing.
-- `playbackMode="replay"` waits for future timestamped frames (no playhead run-ahead when source data is slow).
+- `playbackMode="replay"` uses only incoming `data[i].time` values for progression (no local playhead stepping).
 - Use `waterfallScaleMode="auto"` for dynamic scaling, or `"fixed"` for a fixed min/max.
 - WebGL2 is required.
 
@@ -111,7 +111,7 @@ Typical file-player flow:
 Use `playbackMode` to choose timeline behavior:
 
 - `live` (default): current behavior, render timeline keeps advancing at `targetRate`.
-- `replay`: render timeline advances only when future `data[i].time` frames exist; when data is late/sparse, the display holds until new timestamps arrive.
+- `replay`: render timeline is data-timestamp driven; each update advances to incoming frame timestamps only, and the display holds when no new timed frame exists.
 
 ## Build (library)
 

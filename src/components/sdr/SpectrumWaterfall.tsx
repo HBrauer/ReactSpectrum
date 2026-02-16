@@ -133,6 +133,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         renderTime: 0, // Current playhead time
         lastRafTime: 0,
         accumulator: 0,
+        lastIngestedTime: -Infinity,
 
         // Props Cache
         props: {
@@ -209,6 +210,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
             state.renderTime = 0;
             state.lastRafTime = 0;
             state.accumulator = 0;
+            state.lastIngestedTime = -Infinity;
             state.fftSize = 0;
             state.averagedBins = new Float32Array(0);
             state.waterfallRow = 0;
@@ -245,6 +247,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
         // Data is already an array, just iterate
         data.forEach(d => {
             if (!d.fftBins || d.fftBins.length === 0) return;
+            if (d.time <= state.lastIngestedTime) return;
 
             // Validate / Init FFT Size
             if (d.fftBins.length !== state.fftSize) {
@@ -271,6 +274,8 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                     : (d.time - (state.props.jitterBufferMs / 1000));
                 state.averagedBins.set(d.fftBins);
             }
+
+            state.lastIngestedTime = d.time;
         });
 
         const queue = state.frameQueue;
@@ -552,6 +557,7 @@ export const SpectrumWaterfall: React.FC<SpectrumWaterfallProps> = ({
                     while (frameQueue.length > 0 && steps < maxSteps && fftSize > 0) {
                         const nextFrame = frameQueue.shift();
                         if (!nextFrame) break;
+                        if (nextFrame.time <= state.renderTime) continue;
                         state.renderTime = nextFrame.time;
                         steps++;
                         processRenderedBins(nextFrame.fftBins);
